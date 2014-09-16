@@ -6,15 +6,17 @@ buildarch=4
 pkgname=odroid-libgl-mali-T628-x11
 pkgver=r4p0.02rel0
 _pkgver=r4p0-02rel0
-pkgrel=1
+pkgrel=2
 arch=('armv7h')
 pkgdesc="ODROID Mali GL Driver"
 url="http://malideveloper.arm.com/"
 license=('Proprietary')
 provides=('libegl' 'libgles' 'libMali' 'odroid-libgl')
 conflicts=('odroid-libgl')
-source=("http://malideveloper.arm.com/downloads/drivers/binary/${_pkgver}/mali-t62x_${_pkgver}_linux_1+x11.tar.gz")
-md5sums=('27c00dd067d8d8a185a17c657aab16f0')
+source=("http://malideveloper.arm.com/downloads/drivers/binary/${_pkgver}/mali-t62x_${_pkgver}_linux_1+x11.tar.gz"
+	'pkgconfigs.tar.xz')
+md5sums=('27c00dd067d8d8a185a17c657aab16f0'
+	 '35aa955250b87fbf76ac20a97f81f937')
 
 
 package() {
@@ -27,6 +29,10 @@ package() {
     install -m 0755 libOpenCL.so ${pkgdir}/opt/${pkgname}/lib
     install -m 0755 libmali.so ${pkgdir}/opt/${pkgname}/lib
     
+    cd ${srcdir}
+    mkdir -p ${pkgdir}/usr/lib
+    cp -av pkgconfig ${pkgdir}/usr/lib/pkgconfig
+    chmod 644 ${pkgdir}/usr/lib/pkgconfig/*
 
     cd ${pkgdir}/opt/${pkgname}/lib
     ln -s libEGL.so libEGL.so.1
