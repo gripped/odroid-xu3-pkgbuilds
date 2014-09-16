@@ -3,26 +3,26 @@
 
 buildarch=4
 
-pkgname=odroid-libgl-mali-T628-x11
+pkgname=odroid-libgl-mali-T628-fbdev
 pkgver=r4p0.02rel0
 _pkgver=r4p0-02rel0
-pkgrel=2
+pkgrel=1
 arch=('armv7h')
 pkgdesc="ODROID Mali GL Driver"
 url="http://malideveloper.arm.com/"
 license=('Proprietary')
 provides=('libegl' 'libgles' 'libMali' 'odroid-libgl')
-conflicts=('odroid-libgl' 'odroid-libgl-mali-T628-fbdev')
-source=("http://malideveloper.arm.com/downloads/drivers/binary/${_pkgver}/mali-t62x_${_pkgver}_linux_1+x11.tar.gz"
+conflicts=('odroid-libgl' 'odroid-libgl-mali-T628-x11')
+source=("http://malideveloper.arm.com/downloads/drivers/binary/${_pkgver}/mali-t62x_${_pkgver}_linux_1+fbdev.tar.gz"
 	'pkgconfigs.tar.xz')
-md5sums=('27c00dd067d8d8a185a17c657aab16f0'
+md5sums=('031794281f15ac2624e7d50559fafa82'
 	 '35aa955250b87fbf76ac20a97f81f937')
 
 
 package() {
     install -d -m 0755 ${pkgdir}/opt/${pkgname}/lib
 
-    cd ${srcdir}/x11
+    cd ${srcdir}/fbdev
     install -m 0755 libEGL.so ${pkgdir}/opt/${pkgname}/lib
     install -m 0755 libGLESv1_CM.so ${pkgdir}/opt/${pkgname}/lib
     install -m 0755 libGLESv2.so ${pkgdir}/opt/${pkgname}/lib
