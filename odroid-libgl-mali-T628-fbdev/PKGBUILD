@@ -6,7 +6,7 @@ buildarch=4
 pkgname=odroid-libgl-mali-T628-fbdev
 pkgver=r4p0.02rel0
 _pkgver=r4p0-02rel0
-pkgrel=1
+pkgrel=2
 arch=('armv7h')
 pkgdesc="ODROID Mali GL Driver"
 url="http://malideveloper.arm.com/"
@@ -16,7 +16,7 @@ conflicts=('odroid-libgl' 'odroid-libgl-mali-T628-x11')
 source=("http://malideveloper.arm.com/downloads/drivers/binary/${_pkgver}/mali-t62x_${_pkgver}_linux_1+fbdev.tar.gz"
 	'pkgconfigs.tar.xz')
 md5sums=('031794281f15ac2624e7d50559fafa82'
-	 '35aa955250b87fbf76ac20a97f81f937')
+	 '837b9265b0c2b2595f2b8cab83675852')
 
 
 package() {
