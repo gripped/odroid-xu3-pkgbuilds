@@ -15,30 +15,35 @@ provides=('libegl' 'libgles' 'libMali' 'odroid-libgl')
 conflicts=('odroid-libgl' 'odroid-libgl-mali-T628-x11')
 source=("http://malideveloper.arm.com/downloads/drivers/binary/${_pkgver}/mali-t62x_${_pkgver}_linux_1+fbdev.tar.gz"
 	'pkgconfigs.tar.xz'
-	'fbdev_window.h')
+	'fbdev_window.h'
+	'50-mali.rules')
 md5sums=('031794281f15ac2624e7d50559fafa82'
 	 '5788aedbfc54581e032cc881cbccb66b'
-	 'b81365e9ec463820ee41d67225fb2379')
+	 'b81365e9ec463820ee41d67225fb2379'
+	 '058d139371185145bcc7dfd5b33413d6')
 
 
 package() {
-    install -d -m 0755 ${pkgdir}/usr/lib
+    install -d -m 0755 ${pkgdir}/lib
 
     cd ${srcdir}/fbdev
-    install -m 0755 libEGL.so ${pkgdir}/usr/lib
-    install -m 0755 libGLESv1_CM.so ${pkgdir}/usr/lib
-    install -m 0755 libGLESv2.so ${pkgdir}/usr/lib
-    install -m 0755 libOpenCL.so ${pkgdir}/usr/lib
-    install -m 0755 libmali.so ${pkgdir}/usr/lib
+    install -m 0755 libEGL.so ${pkgdir}/lib
+    install -m 0755 libGLESv1_CM.so ${pkgdir}/lib
+    install -m 0755 libGLESv2.so ${pkgdir}/lib
+    install -m 0755 libOpenCL.so ${pkgdir}/lib
+    install -m 0755 libmali.so ${pkgdir}/lib
     
     cd ${srcdir}
-    mkdir -p ${pkgdir}/usr/lib
-    cp -av pkgconfig ${pkgdir}/usr/lib/pkgconfig
-    chmod 644 ${pkgdir}/usr/lib/pkgconfig/*
-    install -d -m 0755 ${pkgdir}/usr/include/EGL
-    install -m 0755 fbdev_window.h ${pkgdir}/usr/include/EGL
+    mkdir -p ${pkgdir}/lib
+    cp -av pkgconfig ${pkgdir}/lib/pkgconfig
+    chmod 644 ${pkgdir}/lib/pkgconfig/*
+    install -d -m 0755 ${pkgdir}/include/EGL
+    install -m 0755 fbdev_window.h ${pkgdir}/include/EGL
 
-    cd ${pkgdir}/usr/lib
+    install -d -m 0755 ${pkgdir}/lib/udev/rules.d
+    install -m 0644 50-mali.rules ${pkgdir}/lib/udev/rules.d/50-mali.rules
+
+    cd ${pkgdir}/lib
     ln -s libEGL.so libEGL.so.1
     ln -s libEGL.so.1 libEGL.so.1.4 
     ln -s libGLESv1_CM.so libGLESv1_CM.so.1
