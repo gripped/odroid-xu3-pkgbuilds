@@ -1,0 +1,38 @@
+# $Id: PKGBUILD 222973 2014-09-24 22:34:23Z heftig $
+# Maintainer: Jan de Groot <jgc@archlinux.org>
+
+pkgname=gstreamer
+pkgver=1.4.4
+pkgrel=1
+pkgdesc="GStreamer Multimedia Framework"
+arch=('i686' 'x86_64')
+license=('LGPL')
+url="http://gstreamer.freedesktop.org/"
+depends=('libxml2' 'glib2')
+optdepends=('sh: feedback script')
+makedepends=('intltool' 'pkgconfig' 'gobject-introspection' 'python2')
+source=(${url}/src/gstreamer/gstreamer-${pkgver}.tar.xz)
+md5sums=('98f4a6d45a28dd195144baef0244ba38')
+
+build() {
+  cd "${srcdir}/gstreamer-${pkgver}"
+  ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --libexecdir=/usr/lib \
+    --with-package-name="GStreamer (Arch Linux)" \
+    --with-package-origin="http://www.archlinux.org/" \
+    --disable-static
+
+  # https://bugzilla.gnome.org/show_bug.cgi?id=655517
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+
+  make
+}
+
+check() {
+  cd "${srcdir}/gstreamer-${pkgver}"
+  make check
+}
+
+package() {
+  cd "${srcdir}/gstreamer-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+}
