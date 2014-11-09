@@ -1,0 +1,95 @@
+# $Id: PKGBUILD 198639 2013-10-31 16:28:32Z bpiotrowski $
+# Maintainer:  Ionut Biru <ibiru@archlinux.org>
+# Maintainer:  Bartłomiej Piotrowski <nospam@bpiotrowski.pl>
+# Contributor: Tom Newsom <Jeepster@gmx.co.uk>
+# Contributor: Paul Mattal <paul@archlinux.org>
+# Modifier; gripped - forum.odroid.com
+
+pkgname=ffmpeg-neon
+_downname=ffmpeg
+pkgver=2.4.3
+pkgrel=1
+epoch=1
+pkgdesc='Complete and free Internet live audio and video broadcasting solution'
+arch=('i686' 'x86_64')
+url='http://ffmpeg.org/'
+license=('GPL')
+depends=(
+      'alsa-lib' 'bzip2' 'fontconfig' 'gnutls' 'gsm' 'jack' 'lame' 'libass' 'libvdpau'
+      'libbluray' 'libmodplug' 'libpulse' 'libtheora' 'libva' 'libvorbis' 'libvpx-neon'
+      'opencore-amr' 'openjpeg' 'opus' 'rtmpdump' 'schroedinger' 'sdl' 'speex'
+      'v4l-utils' 'libx264-neon' 'xvidcore' 'zlib' 'x265-neon'
+      )
+makedepends=('yasm')
+conflicts=('ffmpeg')
+provides=('ffmpeg=${pkgver}')
+source=(http://ffmpeg.org/releases/$_downname-$pkgver.tar.bz2{,.asc})
+md5sums=('SKIP'
+         'SKIP')
+
+prepare() {
+  cd $_downname-$pkgver
+
+}
+
+build() {
+  cd $_downname-$pkgver
+
+  ./configure \
+    --prefix=/usr \
+    --arch="" \
+    --cpu=cortex-a15 \
+    --enable-pthreads  \
+    --disable-debug \
+    --enable-neon \
+    --enable-nonfree \
+    --disable-static \
+    --enable-avresample \
+    --enable-decoder=atrac3 \
+    --enable-decoder=atrac3p \
+    --enable-dxva2 \
+    --enable-fontconfig \
+    --enable-gnutls \
+    --enable-gpl \
+    --enable-libass \
+    --enable-libbluray \
+    --enable-libfreetype \
+    --enable-libgsm \
+    --enable-libmodplug \
+    --enable-libmp3lame \
+    --enable-libopencore_amrnb \
+    --enable-libopencore_amrwb \
+    --enable-libopenjpeg \
+    --enable-libopus \
+    --enable-libpulse \
+    --enable-librtmp \
+    --enable-libschroedinger \
+    --enable-libspeex \
+    --enable-libtheora \
+    --enable-libv4l2 \
+    --enable-libvorbis \
+    --enable-libvpx \
+    --enable-libx264 \
+    --enable-libx265 \
+    --enable-libxvid \
+    --enable-pic \
+    --enable-postproc \
+    --enable-runtime-cpudetect \
+    --enable-shared \
+    --enable-swresample \
+    --enable-vdpau \
+    --enable-version3 \
+    --enable-x11grab
+
+  make
+  make tools/qt-faststart
+  export PATH=$PATH:/usr/bin/core_perl #Hack fixme (why is it not in PATH?)
+  make doc/ff{mpeg,play,server}.1
+}
+
+package() {
+  cd $_downname-$pkgver
+  make DESTDIR="$pkgdir" install install-man
+  install -D -m755 tools/qt-faststart "$pkgdir"/usr/bin/qt-faststart
+}
+
