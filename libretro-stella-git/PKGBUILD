@@ -1,0 +1,32 @@
+# Maintainer:  prettyvanilla <prettyvanilla@posteo.at>
+# Contributor: almostalive   <almostalive2003 at gmail dot com>
+
+pkgname=libretro-stella-git
+pkgver=93.31a4558
+pkgrel=1
+pkgdesc="libretro implementation of Stella. (Atari 2600)"
+arch=('i686' 'x86_64' 'arm' 'armv6h')
+url="https://github.com/libretro/stella-libretro"
+license=('GPL')
+makedepends=('git')
+
+_gitname=stella-libretro
+source=("git+https://github.com/libretro/${_gitname}.git"
+        "https://raw.github.com/libretro/libretro-super/master/dist/info/stella_libretro.info")
+md5sums=('SKIP'
+         'SKIP')
+
+pkgver() {
+  cd "${_gitname}"
+  echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+build() {
+  cd "${_gitname}"
+  make
+}
+
+package() {
+  install -Dm644 "${_gitname}/stella_libretro.so" "${pkgdir}/usr/lib/libretro/libretro-stella.so"
+  install -Dm644 "stella_libretro.info" "${pkgdir}/usr/lib/libretro/libretro-stella.info"
+}
