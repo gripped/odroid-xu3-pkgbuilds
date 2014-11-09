@@ -1,0 +1,14 @@
+--- a/source/CMakeLists.txt	2014-08-21 22:49:02.000000000 +0100
++++ b/source/CMakeLists.txt.new	2014-08-24 18:52:34.000000000 +0100
+@@ -124,9 +124,8 @@
+     if(X86 AND NOT X64)
+         add_definitions(-march=i686)
+     endif()
+-    if(ARM)
+-        add_definitions(-march=armv6 -mfloat-abi=hard -mfpu=vfp)
+-    endif()
++    add_definitions(-mfloat-abi=hard -mfpu=neon -fPIC)
++
+     check_cxx_compiler_flag(-Wno-narrowing CC_HAS_NO_NARROWING) 
+     check_cxx_compiler_flag(-ffast-math CC_HAS_FAST_MATH) 
+     if (CC_HAS_FAST_MATH)

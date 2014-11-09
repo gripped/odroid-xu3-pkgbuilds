@@ -1,0 +1,37 @@
+# $Id$
+# Maintainer:  Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+# Contributor: kfgz <kfgz at interia pl>
+# Modifier:gripped - forum.odroid.com
+
+pkgname=x265-neon
+pkgver=1.4
+pkgrel=1
+pkgdesc='Open Source H265/HEVC video encoder'
+arch=('i686' 'x86_64')
+license=('GPL')
+depends=('gcc-libs')
+provides=('x265')
+conflicts=('x265')
+makedepends=('yasm' 'cmake')
+url='https://bitbucket.org/multicoreware/x265'
+source=($url/get/$pkgver.tar.bz2
+        arm.patch)
+md5sums=('b37bf7bd05b198c9dd9155d60e1f7100'
+         'SKIP')
+
+prepare() {
+  cd multicoreware-x265-*
+  patch -p1 -i ../arm.patch
+}
+
+build() {
+  cd multicoreware-x265-*/build/linux
+  [[ $CARCH == x86_64 ]] && LDFLAGS+=',-z,noexecstack'
+  cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=/usr ../../source
+  make
+}
+
+package() {
+  cd multicoreware-x265-*/build/linux
+  make DESTDIR="$pkgdir" install
+}
