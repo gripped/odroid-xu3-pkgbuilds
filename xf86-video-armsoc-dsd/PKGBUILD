@@ -1,0 +1,40 @@
+# ArmSoc (OMAP + Mali)  FrameBuffer driver for Xorg from Linaro.
+# Maintainer: Kevin Mihelich <kevin@archlinuxarm.org>
+# Contributor: Erik Andersson <erik.h.andersson@gmail.com>
+# Modifier:   gripped forum.odroid.com
+
+# Official upstream is at 
+# http://git.linaro.org/gitweb?p=arm/xorg/driver/xf86-video-armsoc.git;a=summary
+
+buildarch=4
+
+pkgname=xf86-video-armsoc-dsd
+pkgdesc="armsoc framebuffer driver for X from chromium os git with exynos drm mods"
+pkgver=237.3bdf799
+pkgrel=1
+arch=('armv7h')
+url="https://github.com/mdrjr/xf86-video-armsoc.git"
+license=('GPL2')
+makedepends=('git' 'pkgconfig' 'xorg-server-devel' 'resourceproto' 'scrnsaverproto')
+options=('!libtool')
+conflicts=('xf86-video-armsoc' 'xf86-video-armsoc-git' 'xf86-video-armsoc-odroid')
+source=("$pkgname::git+https://github.com/mdrjr/xf86-video-armsoc.git#branch=r4p0"
+	'patch.diff')
+md5sums=('SKIP'
+	'95a39f9b110d883d6d654a82dbf3fc67')
+
+pkgver() {
+	cd "$srcdir/$pkgname"
+	echo $(git rev-list --count makepkg).$(git rev-parse --short makepkg)
+}
+
+build() {
+  cd "$srcdir/$pkgname"
+  patch -p1 < ../patch.diff
+  ./autogen.sh --prefix=/usr --with-drmmode=exynos
+  make
+}
+
+package() {
+  make -C "$srcdir/$pkgname" DESTDIR="${pkgdir}" install
+}
