@@ -1,0 +1,47 @@
+# $Id: PKGBUILD 149273 2012-02-06 17:33:27Z ibiru $
+# Maintainer: Ionut Biru <ibiru@archlinux.org>
+# Modifier; gripped - forum.odroid.com
+
+# ALARM: Kevin Mihelich <kevin@archlinuxarm.org>
+#  - patch to fix building
+#  - disable neon
+
+# Gripped added to patch to prevent -march and -mtune beieng passed to gcc
+
+pkgname=libvpx-neon
+_pkgname=libvpx
+pkgver=1.3.0
+pkgrel=1
+pkgdesc='The VP8 Codec SDK'
+arch=('i686' 'x86_64')
+url='http://www.webmproject.org/'
+license=('BSD')
+depends=('glibc')
+makedepends=('yasm' 'git')
+conflicts=('libvpx')
+provides=("$_pkgname=${pkgver}")
+source=($_pkgname::git+http://code.google.com/p/webm.libvpx#tag=v$pkgver
+        fix-armhf-link.patch)
+md5sums=('SKIP'
+         '88be7da1de42d56c2e0d08945b65ad2b')
+
+build() {
+    cd $_pkgname
+    patch -p1 -i ../fix-armhf-link.patch
+    ./configure --prefix=/usr \
+        --enable-vp8 \
+        --enable-vp9 \
+        --enable-shared \
+        --enable-postproc \
+        --enable-pic \
+        --disable-install-docs \
+        --disable-install-srcs \
+        --cpu=cortex-a15
+    make
+}
+
+package() {
+    cd $_pkgname
+    make DIST_DIR="$pkgdir/usr" install
+    install -Dm0644 LICENSE "$pkgdir/usr/share/licenses/$_pkgname/LICENSE"
+}
