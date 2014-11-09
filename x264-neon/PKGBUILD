@@ -1,0 +1,80 @@
+# $Id$
+# Maintainer:  Ionut Biru <ibiru@archlinux.org>
+# Maintainer:  Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+# Contributor: damir <damir@archlinux.org>
+# Contributor: Paul Mattal <paul@archlinux.org>
+
+# ALARM: Kevin Mihelich <kevin@archlinuxarm.org>
+#  - configure needs --disable-asm to build on ARM
+# Modifier; gripped - forum.odroid.com
+
+
+pkgname=('x264-neon' 'libx264-neon' 'libx264-10bit-neon')
+_pkgname=x264
+pkgver=142.20140826
+pkgrel=2
+epoch=1
+arch=('i686' 'x86_64')
+url='http://www.videolan.org/developers/x264.html'
+license=('GPL')
+depends=('glibc')
+makedepends=('yasm' 'git' 'ffmpeg')
+source=(git://git.videolan.org/x264.git#commit=021c0dc6c95c)
+md5sums=('SKIP')
+
+pkgver() {
+  cd $_pkgname
+  local _ver=$(grep '#define X264_BUILD' x264.h | cut -d' ' -f3)
+  local _date=$(git log -1 --format="%cd" --date=short | tr -d -)
+
+  echo ${_ver}.${_date}
+}
+
+prepare() {
+  cp -r $_pkgname $_pkgname-10bit
+}
+
+build() {
+  cd $_pkgname
+  ./configure --prefix=/usr \
+    --enable-shared --enable-pic 
+  make
+
+  cd ../$_pkgname-10bit
+  ./configure --prefix=/usr \
+    --enable-shared --enable-pic \
+    --bit-depth=10 
+  make
+}
+
+package_x264-neon() {
+  pkgdesc='CLI tools for encoding H264/AVC video streams'
+  depends=('glibc' 'ffmpeg')
+  provides=('x264-10bit' 'x264')
+  conflicts=('x264-10bit' 'x264')
+  replaces=('x264-10bit' 'x264')
+
+  make -C $_pkgname DESTDIR="$pkgdir" install-cli
+  install -Dm755 $_pkgname-10bit/x264 "$pkgdir"/usr/bin/x264-10bit
+}
+
+package_libx264-neon() {
+  pkgdesc='Library for encoding H264/AVC video streams'
+  depends=('glibc')
+  provides=('x264-dev' 'libx264')
+  conflicts=('x264-dev' 'libx264')
+  replaces=('x264-dev' 'libx264')
+
+  install -d "$pkgdir"/usr/lib
+  make -C $_pkgname DESTDIR="$pkgdir" install-lib-shared
+}
+
+package_libx264-10bit-neon() {
+  pkgdesc='Library for encoding H264/AVC video streams. 10bit-depth.'
+  depends=('glibc')
+  provides=('libx264' 'x264-dev' 'libx264-10bit')
+  conflicts=('libx264' 'x264-dev' 'libx264-10bit')
+
+  install -d "$pkgdir"/usr/lib
+  make -C $_pkgname-10bit DESTDIR="$pkgdir" install-lib-shared
+}
