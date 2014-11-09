@@ -1,0 +1,41 @@
+# $Id: PKGBUILD 149216 2012-02-06 13:29:48Z jgc $
+# Maintainer: Jan de Groot <jgc@archlinux.org>
+# Contributor: Alexander Baldeck <alexander@archlinux.org>
+
+# ALARM: Kevin Mihelich <kevin@archlinuxarm.org>
+#  - disable arm extensions that aren't supported, autodetection fails
+
+pkgname=pixman-neon
+_pkgname=pixman
+pkgver=0.32.6
+pkgrel=2
+pkgdesc="The pixel-manipulation library for X and cairo"
+arch=(i686 x86_64)
+url="http://xorg.freedesktop.org"
+license=('custom')
+depends=('glibc')
+provides=("pixman=${pkgver}")
+conflicts=('pixman')
+source=(http://xorg.freedesktop.org/releases/individual/lib/${_pkgname}-${pkgver}.tar.bz2)
+sha1sums=('e2708db16595412e5aaf21a66b6f18b7223eb6c3')
+
+build() {
+  cd "${srcdir}/${_pkgname}-${pkgver}"
+  [[ $CARCH = "arm" ]] && CONFIG="--disable-arm-simd --disable-arm-neon --disable-arm-iwmmxt"
+  [[ $CARCH = "armv6h" ]] && CONFIG="--disable-arm-simd --disable-arm-neon --disable-arm-iwmmxt"
+  [[ $CARCH = "armv7h" ]] && CONFIG="--disable-arm-iwmmxt"
+  ./configure --prefix=/usr --disable-static $CONFIG
+  make
+}
+
+check() {
+  cd "${srcdir}/${_pkgname}-${pkgver}"
+  #make check
+}
+
+package() {
+  cd "${srcdir}/${_pkgname}-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+  install -m755 -d "${pkgdir}/usr/share/licenses/${_pkgname}"
+  install -m644 COPYING "${pkgdir}/usr/share/licenses/${_pkgname}/"
+}
