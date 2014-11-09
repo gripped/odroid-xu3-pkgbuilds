@@ -11,7 +11,7 @@
 pkgbase=mesa-noegl
 pkgname=('mesa-noegl' 'mesa-libgl-noegl' 'mesa-dri-noegl')
 pkgver=10.3.3
-pkgrel=1
+pkgrel=2
 arch=('armv7h')
 makedepends=('python2' 'libxml2' 'libx11' 'glproto' 'libdrm' 'dri2proto' 'dri3proto' 'presentproto' 
              'libxshmfence' 'libxxf86vm'  'libxdamage' 'libvdpau' 'wayland' 'elfutils' 'llvm' 'systemd'
@@ -33,25 +33,27 @@ build() {
   ./configure --prefix=/usr \
     --sysconfdir=/etc \
     --with-dri-driverdir=/usr/lib/xorg/modules/dri \
-    --with-gallium-drivers=swrast \
-    --with-dri-drivers=swrast \
-    --with-egl-platforms=drm,wayland \
-    --with-llvm-shared-libs \
-    --enable-gallium-llvm \
+    --with-gallium-drivers=nouveau,swrast \
+    --with-dri-drivers=nouveau,swrast \
+    --with-egl-platforms=x11,drm,wayland \
+    --enable-llvm-shared-libs \
     --enable-egl \
     --disable-gallium-egl \
     --disable-gallium-gbm \
-    --enable-shared-glapi \
     --enable-gbm \
+    --enable-gallium-llvm \
+    --enable-shared-glapi \
+    --enable-glx \
     --enable-glx-tls \
     --enable-dri \
-    --enable-glx \
     --enable-osmesa \
-    --disable-gles1 \
-    --disable-gles2 \
+    --enable-gles1 \
+    --enable-gles2 \
     --enable-texture-float \
-    --enable-omx 
+    --enable-omx \
+    --with-clang-libdir=/usr/lib
     # --help
+
 
   make
 
@@ -111,6 +113,8 @@ package_mesa-libgl-noegl() {
  
   install -m755 -d ${pkgdir}/usr/lib
   rm ${srcdir}/fakeinstall/usr/lib/pkgconfig/egl.pc
+  rm ${srcdir}/fakeinstall/usr/lib/pkgconfig/glesv1_cm.pc
+  rm ${srcdir}/fakeinstall/usr/lib/pkgconfig/glesv2.pc
   mv -v ${srcdir}/fakeinstall/usr/lib/pkgconfig ${pkgdir}/usr/lib/
  
   # See FS#26284
