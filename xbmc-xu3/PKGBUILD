@@ -15,7 +15,7 @@ buildarch=4
 
 _prefix=/usr
 
-pkgname=xbmc
+pkgname=xbmc-xu3
 pkgver=13.2
 _codename=Gotham
 _commit=88f65ebd8970205c96fbf4fc9be888cb7cbffcd9
@@ -66,6 +66,9 @@ sha256sums=('0e88064526a672f53be287082ad88a15a0e1ec472a8945eac78e5ecd0f2d07ad'
             '33d6bd2b0da3d8563bfdf6059ad59ca10d9fe617e51990220ceb40d6fb3129d3'
             'd98f86ceefb039b43a66332658aeee4aff25370248955ece10d04ae21f33d2a9'
             'd829a5267f0b8042308b291366915253b3104d85a780a03cdaff6bec82493b95')
+
+provides=('xbmc')
+conflicts=('xbmc')
 
 prepare() {
   cd "$srcdir/xbmc-$_commit"
