@@ -7,20 +7,20 @@
 
 pkgname=ffmpeg-neon
 _downname=ffmpeg
-pkgver=2.4.3
-pkgrel=1
+pkgver=2.5.2
+pkgrel=2
 epoch=1
 pkgdesc='Complete and free Internet live audio and video broadcasting solution'
 arch=('i686' 'x86_64')
 url='http://ffmpeg.org/'
 license=('GPL')
 depends=(
-      'alsa-lib' 'bzip2' 'fontconfig' 'gnutls' 'gsm' 'jack' 'lame' 'libass' 'libvdpau'
+      'alsa-lib' 'bzip2' 'fontconfig' 'gnutls' 'gsm' 'lame' 'libass' 'libvdpau'
       'libbluray' 'libmodplug' 'libpulse' 'libtheora' 'libva' 'libvorbis' 'libvpx-neon'
       'opencore-amr' 'openjpeg' 'opus' 'rtmpdump' 'schroedinger' 'sdl' 'speex'
-      'v4l-utils' 'libx264-neon' 'xvidcore' 'zlib' 'x265-neon'
+      'v4l-utils' 'libx264-neon' 'xvidcore' 'zlib' 'x265-neon' 'fribidi'
       )
-makedepends=('yasm')
+makedepends=('yasm' 'hardening-wrapper')
 conflicts=('ffmpeg')
 provides=('ffmpeg=${pkgver}')
 source=(http://ffmpeg.org/releases/$_downname-$pkgver.tar.bz2{,.asc})
@@ -44,6 +44,7 @@ build() {
     --enable-neon \
     --enable-nonfree \
     --disable-static \
+    --enable-avisynth \
     --enable-avresample \
     --enable-decoder=atrac3 \
     --enable-decoder=atrac3p \
@@ -54,6 +55,7 @@ build() {
     --enable-libass \
     --enable-libbluray \
     --enable-libfreetype \
+    --enable-libfribidi \
     --enable-libgsm \
     --enable-libmodplug \
     --enable-libmp3lame \
