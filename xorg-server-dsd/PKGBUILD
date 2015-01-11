@@ -5,8 +5,8 @@
 pkgbase=xorg-server-dsd
 _pkgbase=xorg-server
 pkgname=('xorg-server-dsd' 'xorg-server-xephyr' 'xorg-server-xdmx' 'xorg-server-xvfb' 'xorg-server-xnest' 'xorg-server-xwayland' 'xorg-server-common' 'xorg-server-devel')
-pkgver=1.16.1
-pkgrel=1 # build first with 0.1 and then rebuild it after xf86-input-evdev rebuild
+pkgver=1.16.3
+pkgrel=2 # build first with 0.1 and then rebuild it after xf86-input-evdev rebuild
 arch=('i686' 'x86_64')
 license=('custom')
 url="http://xorg.freedesktop.org"
@@ -16,15 +16,14 @@ makedepends=('pixman' 'libx11' 'mesa' 'mesa-libgl' 'xf86driproto' 'xcmiscproto' 
              'xf86dgaproto' 'libxmu' 'libxrender' 'libxi' 'dmxproto' 'libxaw' 'libdmx' 'libxtst' 'libxres'
              'xorg-xkbcomp' 'xorg-util-macros' 'xorg-font-util' 'glproto' 'dri2proto' 'libgcrypt' 'libepoxy'
              'xcb-util' 'xcb-util-image' 'xcb-util-wm' 'xcb-util-keysyms' 'dri3proto' 'libxshmfence') 
-source=(${url}/releases/individual/xserver/${_pkgbase}-${pkgver}.tar.bz2{,.sig}
+source=(${url}/releases/individual/xserver/${_pkgbase}-${pkgver}.tar.bz2
         autoconfig-nvidia.patch
         autoconfig-sis.patch
         nvidia-drm-outputclass.conf
         xvfb-run
         xvfb-run.1
 	dsd.patch)
-sha256sums=('f4677c6ec9fb7b59648321737087aeb9963b60bcea50ee3773fe46be1a37e060'
-            'SKIP'
+sha256sums=('5e0f443238af1078b48f6eea98a382861b59187da221c2cf714d31c1d560b0fb'
             '66e25f76a7496c429e0aff4b0670f168719bb0ceaeb88c6f2272f2bf3ed21162'
             'd027776fac1f7675b0a9ee817502290b1c45f9c09b0f0a6bb058c35f92361e84'
             'af1c3d2ea5de7f6a6b5f7c60951a189a4749d1495e5462f3157ae7ac8fe1dc56'

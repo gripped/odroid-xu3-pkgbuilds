@@ -19,7 +19,7 @@ pkgname=xbmc-xu3
 pkgver=13.2
 _codename=Gotham
 _commit=88f65ebd8970205c96fbf4fc9be888cb7cbffcd9
-pkgrel=5
+pkgrel=8
 pkgdesc="A software media player and entertainment hub for digital media"
 arch=('i686' 'x86_64')
 url="http://xbmc.org"
@@ -108,6 +108,7 @@ build() {
     --enable-projectm \
     --enable-x11 \
     --enable-pulse \
+    --enable-alsa \
     --enable-rtmp \
     --enable-samba \
     --enable-nfs \

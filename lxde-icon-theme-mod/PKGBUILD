@@ -1,0 +1,39 @@
+# $Id: PKGBUILD 69846 2012-04-24 15:44:46Z bpiotrowski $
+# Maintainer: Angel Velasquez <angvp@archlinux.org>
+# Maintainer: Juergen Hoetzel <juergen@archlinux.org>
+# Modifier: gripped  forum.odroid.com  Black volume icon replaced with icon from Faenza
+
+pkgname=lxde-icon-theme-mod
+_pkgname=lxde-icon-theme
+pkgver=0.5.1
+pkgrel=1
+pkgdesc="LXDE default default icon theme based on nuoveXT2"
+url="http://lxde.org"
+depends=('gtk-update-icon-cache')
+license=('GPL')
+conflicts=('lxde-icon-theme')
+provides=('lxde-icon-theme')
+arch=(any)
+install=lxde-icon-theme.install
+source=("http://downloads.sourceforge.net/lxde/$_pkgname-$pkgver.tar.xz"
+	'http://odroidxu.leeharris.me.uk/xu/icons.tar.xz')
+md5sums=('7467133275edbbcc79349379235d4411'
+         '6ad897d6c68fff1bb1e6c678cc085d77')
+
+build() {
+  cd "$srcdir/$_pkgname-$pkgver"
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "$srcdir/$_pkgname-$pkgver"
+  make DESTDIR="$pkgdir" install
+  cp -av $srcdir/icons/status/16/*.png $pkgdir/usr/share/icons/nuoveXT2/16x16/status
+  cp -av $srcdir/icons/status/22/*.png $pkgdir/usr/share/icons/nuoveXT2/22x22/status
+  cp -av $srcdir/icons/status/24/*.png $pkgdir/usr/share/icons/nuoveXT2/24x24/status
+  cp -av $srcdir/icons/status/32/*.png $pkgdir/usr/share/icons/nuoveXT2/32x32/status
+  cp -av $srcdir/icons/status/48/*.png $pkgdir/usr/share/icons/nuoveXT2/48x48/status
+  cp -av $srcdir/icons/status/64/*.png $pkgdir/usr/share/icons/nuoveXT2/64x64/status
+  cp -av $srcdir/icons/status/96/*.png $pkgdir/usr/share/icons/nuoveXT2/96x96/status 
+}
