@@ -1,0 +1,14 @@
+post_install() {
+  message
+}
+
+post_upgrade() {
+  message
+}
+
+
+message() {
+  bold=`tput bold`
+  echo ""
+  echo "${bold}Needs to be run as root to see all the data"
+}

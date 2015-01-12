@@ -1,0 +1,37 @@
+# Maintainer:  gripped forum.odroid.com
+
+# Official upstream is at 
+# http://git.linaro.org/gitweb?p=arm/xorg/driver/xf86-video-armsoc.git;a=summary
+
+buildarch=4
+
+pkgname=xu3-energy-monitor
+pkgdesc="xu3-energy-monitor"
+pkgver=21.fa7e469
+pkgrel=1
+arch=('armv7h')
+url="https://github.com/hardkernel/EnergyMonitor.git"
+license=('GPL2')
+install=xu3-energy-monitor.install
+depends=('qt4' 'qwt')
+makedepends=('git')
+
+source=("$pkgname::git+https://github.com/hardkernel/EnergyMonitor.git")
+md5sums=('SKIP')
+
+ pkgver() {
+ 	cd "$srcdir/$pkgname"
+ 	echo $(git rev-list --count makepkg).$(git rev-parse --short makepkg)
+}
+
+build() {
+  cd "$srcdir/$pkgname"
+  qmake-qt4 -project
+  echo "CONFIG += qwt" >> xu3-energy-monitor.pro
+  qmake-qt4 xu3-energy-monitor.pro
+  make -j8
+}
+
+package() {
+  make -C "$srcdir/$pkgname" DESTDIR="${pkgdir}" install
+}
