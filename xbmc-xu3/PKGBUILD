@@ -19,14 +19,14 @@ pkgname=xbmc-xu3
 pkgver=13.2
 _codename=Gotham
 _commit=88f65ebd8970205c96fbf4fc9be888cb7cbffcd9
-pkgrel=8
+pkgrel=9
 pkgdesc="A software media player and entertainment hub for digital media"
 arch=('i686' 'x86_64')
 url="http://xbmc.org"
 license=('GPL2')
 depends=(
 'avahi' 'ffmpeg' 'hicolor-icon-theme' 'lame' 'libass' 'libbluray' 'libcdio' 'libmad'
-'libmicrohttpd' 'libmodplug' 'libmpeg2' 'libmysqlclient' 'libpulse'
+'libmicrohttpd' 'libmodplug' 'libmpeg2' 'libmysqlclient' 'libpulse-neon'
 'libsamplerate' 'libssh' 'libva' 'libvdpau' 'libvorbis' 'libxrandr' 'libxslt'
 'lzo' 'mesa' 'mesa-demos' 'python2' 'python2-pillow' 'rtmpdump' 'sdl_image'
 'smbclient' 'taglib' 'tinyxml' 'unzip' 'xorg-xdpyinfo' 'yajl'
