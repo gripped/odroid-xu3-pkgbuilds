@@ -3,8 +3,8 @@
 # Contributor: Themaister    <maister@archlinux.us>
 
 pkgname=retroarch-git
-pkgver=14739.47b014d
-pkgrel=1
+pkgver=15379.b61ae36
+pkgrel=2
 pkgdesc="Reference frontend for the libretro API."
 arch=('i686' 'x86_64' 'arm' 'armv6h')
 url="http://github.com/libretro/RetroArch"
@@ -37,4 +37,5 @@ build() {
 package() {
   cd "${_gitname}"
   make install DESTDIR="${pkgdir}"
+  install -m755 "${srcdir}/RetroArch/tools/retroarch-joyconfig" "${pkgdir}/usr/bin/retroarch-joyconfig"
 }
