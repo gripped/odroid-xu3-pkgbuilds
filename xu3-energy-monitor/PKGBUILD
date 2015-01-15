@@ -1,7 +1,5 @@
 # Maintainer:  gripped forum.odroid.com
 
-# Official upstream is at 
-# http://git.linaro.org/gitweb?p=arm/xorg/driver/xf86-video-armsoc.git;a=summary
 
 buildarch=4
 
