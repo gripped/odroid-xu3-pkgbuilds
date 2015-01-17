@@ -3,8 +3,8 @@
 # Contributor: Themaister    <maister@archlinux.us>
 
 pkgname=retroarch-git
-pkgver=15379.b61ae36
-pkgrel=3
+pkgver=1.0.0.3.beta.r994.gd145834
+pkgrel=1
 pkgdesc="Reference frontend for the libretro API."
 arch=('i686' 'x86_64' 'arm' 'armv6h')
 url="http://github.com/libretro/RetroArch"
@@ -22,7 +22,7 @@ source=("git+https://github.com/libretro/${_gitname}.git")
 md5sums=('SKIP')
 
 pkgver() {
-  cd "$srcdir/$pkgname"
+  cd "${_gitname}"
   ( set -o pipefail
     git describe --long --tags 2>/dev/null | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
     printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"

@@ -33,8 +33,7 @@ pkgver() {
 	
 build() {
   cd "$srcdir/$pkgname"
-#  patch -p0 < ../patch.diff
-  git apply -v --reject ../oversun.diff
+  patch -p0 < ../patch.diff
   ./autogen.sh --prefix=/usr --with-drmmode=exynos
   make
 }
