@@ -10,27 +10,33 @@ buildarch=4
 
 pkgname=xf86-video-armsoc-dsd
 pkgdesc="armsoc framebuffer driver for X from chromium os git with exynos drm mods"
-pkgver=237.3bdf799
+pkgver=1.1.0.r1.g459fcb4
 pkgrel=2
 arch=('armv7h')
-url="https://github.com/endlessm/xf86-video-armsoc.git"
+url="git://anongit.freedesktop.org/xorg/driver/xf86-video-armsoc"
 license=('GPL2')
 makedepends=('git' 'pkgconfig' 'xorg-server-devel' 'resourceproto' 'scrnsaverproto')
 options=('!libtool')
 conflicts=('xf86-video-armsoc' 'xf86-video-armsoc-git' 'xf86-video-armsoc-odroid')
-source=("$pkgname::git+https://github.com/mdrjr/xf86-video-armsoc.git#branch=r4p0"
-	'patch.diff')
+source=("$pkgname::git+git://anongit.freedesktop.org/xorg/driver/xf86-video-armsoc"
+	'patch.diff'
+	'oversun.diff')
 md5sums=('SKIP'
-	'95a39f9b110d883d6d654a82dbf3fc67')
+	'SKIP'
+	'SKIP')
 
 pkgver() {
-	cd "$srcdir/$pkgname"
-	echo $(git rev-list --count makepkg).$(git rev-parse --short makepkg)
+  cd "$srcdir/$pkgname"
+  ( set -o pipefail
+    git describe --long --tags 2>/dev/null | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+  )
 }
-
+	
 build() {
   cd "$srcdir/$pkgname"
-  patch -p1 < ../patch.diff
+#  patch -p0 < ../patch.diff
+  git apply -v --reject ../oversun.diff
   ./autogen.sh --prefix=/usr --with-drmmode=exynos
   make
 }
