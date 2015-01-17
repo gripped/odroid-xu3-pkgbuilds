@@ -19,10 +19,8 @@ makedepends=('git' 'pkgconfig' 'xorg-server-devel' 'resourceproto' 'scrnsaverpro
 options=('!libtool')
 conflicts=('xf86-video-armsoc' 'xf86-video-armsoc-git' 'xf86-video-armsoc-odroid')
 source=("$pkgname::git+git://anongit.freedesktop.org/xorg/driver/xf86-video-armsoc"
-	'patch.diff'
-	'oversun.diff')
+	'patch.diff')
 md5sums=('SKIP'
-	'SKIP'
 	'SKIP')
 
 pkgver() {

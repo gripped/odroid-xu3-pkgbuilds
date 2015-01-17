@@ -4,7 +4,7 @@
 
 pkgname=retroarch-git
 pkgver=15379.b61ae36
-pkgrel=2
+pkgrel=3
 pkgdesc="Reference frontend for the libretro API."
 arch=('i686' 'x86_64' 'arm' 'armv6h')
 url="http://github.com/libretro/RetroArch"
@@ -22,8 +22,11 @@ source=("git+https://github.com/libretro/${_gitname}.git")
 md5sums=('SKIP')
 
 pkgver() {
-  cd "${_gitname}"
-  echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+  cd "$srcdir/$pkgname"
+  ( set -o pipefail
+    git describe --long --tags 2>/dev/null | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+  )
 }
 
 build() {

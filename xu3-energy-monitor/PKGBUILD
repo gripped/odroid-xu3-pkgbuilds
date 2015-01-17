@@ -6,7 +6,7 @@ buildarch=4
 pkgname=xu3-energy-monitor
 pkgdesc="xu3-energy-monitor"
 pkgver=21.fa7e469
-pkgrel=2
+pkgrel=3
 arch=('armv7h')
 url="https://github.com/hardkernel/EnergyMonitor.git"
 license=('GPL2')
@@ -17,9 +17,12 @@ makedepends=('git')
 source=("$pkgname::git+https://github.com/hardkernel/EnergyMonitor.git")
 md5sums=('SKIP')
 
- pkgver() {
- 	cd "$srcdir/$pkgname"
- 	echo $(git rev-list --count makepkg).$(git rev-parse --short makepkg)
+pkgver() {
+  cd "$srcdir/$pkgname"
+  ( set -o pipefail
+    git describe --long --tags 2>/dev/null | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+  )
 }
 
 build() {
