@@ -1,0 +1,45 @@
+# Maintainer:  gripped forum.odroid.com
+
+# Official upstream is at 
+# http://git.linaro.org/gitweb?p=arm/xorg/driver/xf86-video-armsoc.git;a=summary
+
+
+pkgname=glshim-odroid
+pkgdesc="This is a shim providing OpenGL 1.x functionality to OpenGL ES accelerated cards."
+pkgver=0.41.r26.gb012fc9
+pkgrel=2
+arch=('armv7h')
+url="https://github.com/lunixbochs/glshim"
+license=('GPL2')
+install=('install')
+makedepends=('git')
+depends=('glues-odroid')
+source=("$pkgname::git+https://github.com/lunixbochs/glshim"
+	'glshim'
+	'glshim-preload')
+md5sums=('SKIP'
+         '21e8a350860936359d89547d89367a3e'
+         '3b75d724d9506adeccdbc3cff1dc41fe')
+pkgver() {
+  cd "$srcdir/$pkgname"
+  ( set -o pipefail
+    git describe --long --tags 2>/dev/null | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+  )
+}
+
+build() {
+  cd "$srcdir/$pkgname"
+  cmake -DCMAKE_INSTALL_PREFIX:PATH=/opt/glshim .
+  make GL
+  cd src/preload
+  gcc -Wall -shared -o preload.so.1 -fPIC preload.c
+}
+
+package() {
+  make -C "$srcdir/$pkgname" DESTDIR="${pkgdir}" install
+  install -m644 "${srcdir}/${pkgname}/src/preload/preload.so.1" "${pkgdir}/opt/glshim/lib/preload.so.1"
+  install -m755 -d ${pkgdir}/usr/bin
+  install -m755 "${srcdir}/glshim" "${pkgdir}/usr/bin/glshim"
+  install -m755 "${srcdir}/glshim-preload" "${pkgdir}/usr/bin/glshim-preload"
+}

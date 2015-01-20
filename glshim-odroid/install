@@ -1,0 +1,14 @@
+post_install() {
+  message
+}
+
+post_upgrade() {
+  message
+}
+
+
+message() {
+  bold=`tput bold`
+  echo ""
+  echo "${bold}Use glshim PROGRAM_NAME or glshim-preload PROGRAM_NAME to start a program with glshim"
+} 

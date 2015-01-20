@@ -1,0 +1,33 @@
+# Maintainer:  gripped forum.odroid.com
+
+pkgname=glues-odroid
+pkgdesc="GLU for GLES 1.x"
+pkgrel=1
+_pkgname=glu
+pkgver=r7.44cb7c6
+arch=('armv7h')
+url="https://github.com/lunixbochs/glues"
+license=('LGPL' 'SGI2')
+makedepends=('git')
+source=("$pkgname::git+https://github.com/lunixbochs/glues#branch=glu")
+md5sums=('SKIP')
+
+pkgver() {
+  cd "$srcdir/$pkgname"
+  ( set -o pipefail
+    git describe --long --tags 2>/dev/null | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+  )
+}
+
+build() {
+
+  cd "$srcdir/$pkgname"
+  cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr .
+  make GLU
+}
+
+package() {
+  install -m755 -d ${pkgdir}/opt/glshim/lib
+  install -m644 "${srcdir}/${pkgname}/libGLU.so.1" "${pkgdir}/opt/glshim/lib/libGLU.so.1"
+}

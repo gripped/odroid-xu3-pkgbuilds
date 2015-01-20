@@ -1,0 +1,2 @@
+#!/bin/bash
+LD_LIBRARY_PATH=/opt/glshim/lib LD_PRELOAD=preload.so.1 "$@"
