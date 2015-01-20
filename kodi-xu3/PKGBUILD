@@ -17,7 +17,7 @@ pkgname=('kodi-xu3' 'kodi-eventclients-xu3')
 pkgver=14.0
 _codename=Helix
 _commit=fc8d6936bdda304262b23f798e00634d1aa4bb6a
-pkgrel=3
+pkgrel=4
 arch=('i686' 'x86_64')
 url="http://kodi.tv"
 license=('GPL2')
@@ -37,6 +37,7 @@ source=(
 sha256sums=(
   '151564ccd6eb584ba46c24f36058ba384ed38eaa46594925935f9e04edcb7aad'
   'caff0bc804525a9be02c3d5ae0d93424faa99b56aa597f6c2beb0273a6df3bb7'
+  '51-cec.rules'
 )
 
 prepare() {
@@ -120,6 +121,10 @@ package_kodi-xu3() {
 		mv ${pkgdir}${_prefix}/share/doc/kodi/${licensef} \
 			${pkgdir}${_prefix}/share/licenses/${pkgname}
   done
+  
+
+  install -d -m 0755 ${pkgdir}/usr/lib/udev/rules.d
+  install -m 0644 ${srcdir}/51-cec.rules ${pkgdir}/usr/lib/udev/rules.d/51-cec.rules
 }
 
 package_kodi-eventclients-xu3() {

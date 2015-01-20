@@ -1,9 +1,11 @@
 post_install() {
   update_icons
+  message
 }
 
 post_upgrade() {
   update_icons
+  message
 }
 
 post_remove() {
@@ -14,4 +16,10 @@ update_icons() {
   type -p gtk-update-icon-cache > /dev/null 2>&1 && usr/bin/gtk-update-icon-cache -qtf usr/share/icons/hicolor
   type -p update-desktop-database > /dev/null 2>&1 && usr/bin/update-desktop-database -q usr/share/applications
   return 0
+}
+
+message() {
+  bold=`tput bold`
+  echo ""
+  echo "${bold}You need to be in group video"
 }
