@@ -6,7 +6,7 @@ buildarch=4
 pkgname=odroid-libgl-mali-T628-fbdev
 pkgver=r4p0.02rel0
 _pkgver=r4p0-02rel0
-pkgrel=3
+pkgrel=4
 arch=('armv7h')
 pkgdesc="ODROID Mali GL Driver"
 url="http://malideveloper.arm.com/"
@@ -27,10 +27,6 @@ package() {
     install -d -m 0755 ${pkgdir}/usr/lib
 
     cd ${srcdir}/fbdev
-    install -m 0755 libEGL.so ${pkgdir}/usr/lib
-    install -m 0755 libGLESv1_CM.so ${pkgdir}/usr/lib
-    install -m 0755 libGLESv2.so ${pkgdir}/usr/lib
-    install -m 0755 libOpenCL.so ${pkgdir}/usr/lib
     install -m 0755 libmali.so ${pkgdir}/usr/lib
     
     cd ${srcdir}
@@ -44,15 +40,16 @@ package() {
     install -m 0644 50-mali.rules ${pkgdir}/usr/lib/udev/rules.d/50-mali.rules
 
     cd ${pkgdir}/usr/lib
-    ln -s libEGL.so libEGL.so.1
-    ln -s libEGL.so.1 libEGL.so.1.4 
-    ln -s libGLESv1_CM.so libGLESv1_CM.so.1
-    ln -s libGLESv1_CM.so libGLESv1_CM.so.1.1
-    ln -s libGLESv2.so libGLESv2.so.2
-    ln -s libGLESv2.so libGLESv2.so.2.0
-    ln -s libOpenCL.so libOpenCL.so.1
-    ln -s libOpenCL.so libOpenCL.so.1.0
-
-    
-
+    ln -s libmali.so libEGL.so
+    ln -s libmali.so libEGL.so.1
+    ln -s libmali.so libEGL.so.1.4
+    ln -s libmali.so libGLESv1_CM.so
+    ln -s libmali.so libGLESv1_CM.so.1
+    ln -s libmali.so libGLESv1_CM.so.1.1
+    ln -s libmali.so libGLESv2.so
+    ln -s libmali.so libGLESv2.so.2
+    ln -s libmali.so libGLESv2.so.2.0
+    ln -s libmali.so libOpenCL.so
+    ln -s libmali.so libOpenCL.so.1
+    ln -s libmali.so libOpenCL.so.1.0
 }
