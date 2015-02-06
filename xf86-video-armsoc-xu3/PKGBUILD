@@ -7,22 +7,22 @@
 # http://git.linaro.org/gitweb?p=arm/xorg/driver/xf86-video-armsoc.git;a=summary
 
 buildarch=4
-
-pkgname=xf86-video-armsoc-dsd
-pkgdesc="armsoc framebuffer driver for X from chromium os git with exynos drm mods"
-pkgver=1.1.0.r1.g459fcb4
-pkgrel=2
+_commit=85bb9041dabdd56b8dbbb69d3f8d6f023c3c9ba4
+pkgname=xf86-video-armsoc-xu3
+pkgdesc="armsoc framebuffer driver for X which attempts to comprimise between spped and usability on the xu3"
+pkgver=Release_2.2.0.r6.g6d9ad29
+pkgrel=1
 arch=('armv7h')
 url="git://anongit.freedesktop.org/xorg/driver/xf86-video-armsoc"
 license=('GPL2')
 makedepends=('git' 'pkgconfig' 'xorg-server-devel' 'resourceproto' 'scrnsaverproto')
 options=('!libtool')
-conflicts=('xf86-video-armsoc' 'xf86-video-armsoc-git' 'xf86-video-armsoc-odroid')
-source=("$pkgname::git+git://anongit.freedesktop.org/xorg/driver/xf86-video-armsoc"
+conflicts=('xf86-video-armsoc' 'xf86-video-armsoc-git' 'xf86-video-armsoc-odroid' 'xf86-video-armsoc-dsd' )
+replaces=('xf86-video-armsoc-dsd')
+source=("https://github.com/mihailescu2m/xf86-video-armsoc/archive/$_commit.tar.gz"
 	'patch.diff')
 md5sums=('SKIP'
 	'SKIP')
-
 pkgver() {
   cd "$srcdir/$pkgname"
   ( set -o pipefail
@@ -32,12 +32,18 @@ pkgver() {
 }
 	
 build() {
-  cd "$srcdir/$pkgname"
-  patch -p0 < ../patch.diff
+  cd "$srcdir/xf86-video-armsoc-$_commit"
+ # git checkout -b $_commit $_commit
+  if [ -f src/armsoc_dumb.c ]
+  then
+    patch -N -p1 < ../patch.diff
+  else
+    exit
+  fi
   ./autogen.sh --prefix=/usr --with-drmmode=exynos
   make
 }
 
 package() {
-  make -C "$srcdir/$pkgname" DESTDIR="${pkgdir}" install
+  make -C "$srcdir/xf86-video-armsoc-$_commit" DESTDIR="${pkgdir}" install
 }
