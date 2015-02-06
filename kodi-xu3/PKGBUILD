@@ -14,10 +14,10 @@ _prefix=/usr
 
 pkgbase=kodi-xu3
 pkgname=('kodi-xu3' 'kodi-eventclients-xu3')
-pkgver=14.0
+pkgver=14.1
 _codename=Helix
-_commit=fc8d6936bdda304262b23f798e00634d1aa4bb6a
-pkgrel=4
+_commit=1400baa80612519bacfc9356d384ee3d7ec52e19
+pkgrel=1
 arch=('i686' 'x86_64')
 url="http://kodi.tv"
 license=('GPL2')
@@ -36,7 +36,7 @@ source=(
   '51-cec.rules'
 )
 sha256sums=(
-  '151564ccd6eb584ba46c24f36058ba384ed38eaa46594925935f9e04edcb7aad'
+  '5765ee1909b5488d518ed8d5e3a626a6359e02b9b0c1201960582bb254993afe'
   'caff0bc804525a9be02c3d5ae0d93424faa99b56aa597f6c2beb0273a6df3bb7'
   '42d5adfb911e889134f8b81b509fc15a145e4b3e78be9505a46c47a36100e96f'
 )
