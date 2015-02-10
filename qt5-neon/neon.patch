@@ -1,0 +1,11 @@
+--- qtbase/configure.orig	2014-12-05 16:24:14.000000000 +0000
++++ qtbase/configure	2015-02-08 19:30:29.961841368 +0000
+@@ -676,7 +676,7 @@
+ CFG_REDUCE_RELOCATIONS=auto
+ CFG_ACCESSIBILITY=auto
+ CFG_ACCESSIBILITY_ATSPI_BRIDGE=no # will be enabled depending on dbus and accessibility being enabled
+-CFG_NEON=auto
++CFG_NEON=yes
+ CFG_MIPS_DSP=auto
+ CFG_MIPS_DSPR2=auto
+ CFG_CLOCK_GETTIME=auto

@@ -1,0 +1,624 @@
+# $Id: PKGBUILD 179039 2013-03-01 20:22:01Z andrea $
+# Maintainer: Andrea Scarpino <andrea@archlinux.org>
+
+# ALARM: Kevin Mihelich <kevin@archlinuxarm.org>
+#  - removed libfbclient, ibase
+#  - no x86/neon optimizations
+#  - restricted makeflags to -j3
+#  - enabled opengl es2, mesa makedepend for headers
+#  - added Raspberry Pi patches for armv6h
+#  - icu makedepend so qtwebkit can build
+#  - drop webengine package and skip in configure
+
+# Arno Rehn <arno@arnorehn.de>
+#  - fix Raspberry Pi EGL/GLESv2 build
+# Modifier: gripped - forum.odroid.com - Enable neon. For Odroid XU3
+
+pkgbase=qt5-neon
+pkgname=('qt5-base-neon'
+         'qt5-connectivity-neon'
+         'qt5-declarative-neon'
+         'qt5-doc-neon'
+         'qt5-enginio-neon'
+         'qt5-graphicaleffects-neon'
+         'qt5-imageformats-neon'
+         'qt5-location-neon'
+         'qt5-multimedia-neon'
+         'qt5-quick1-neon'
+         'qt5-quickcontrols-neon'
+         'qt5-script-neon'
+         'qt5-sensors-neon'
+         'qt5-serialport-neon'
+         'qt5-svg-neon'
+         'qt5-tools-neon'
+         'qt5-translations-neon'
+         'qt5-wayland-neon'
+         'qt5-webchannel-neon'
+         'qt5-webkit-neon'
+         'qt5-websockets-neon'
+         'qt5-x11extras-neon'
+         'qt5-xmlpatterns-neon')
+pkgver=5.4.0
+pkgrel=3
+arch=('i686' 'x86_64')
+url='http://qt-project.org/'
+license=('GPL3' 'LGPL' 'FDL' 'custom')
+makedepends=('libxcb' 'xcb-proto' 'xcb-util' 'xcb-util-image' 'xcb-util-wm' 'xcb-util-keysyms'
+            'mesa' 'at-spi2-core' 'alsa-lib' 'gst-plugins-base-libs' 'gstreamer0.10-base-plugins'
+            'libjpeg-turbo' 'cups' 'libpulse' 'hicolor-icon-theme' 'desktop-file-utils'
+            'postgresql-libs' 'libmariadbclient' 'sqlite' 'unixodbc' 'libfbclient' 'libmng'
+            'python2' 'ruby' 'gperf' 'libxslt' 'libxcomposite' 'fontconfig' 'bluez-libs'
+            'openal' 'gtk2' 'libxkbcommon-x11' 'mtdev' 'harfbuzz' 'libwebp' 'leveldb'
+            'geoclue' 'pciutils' 'nss' 'gstreamer0.10-bad')
+groups=('qt' 'qt5')
+_pkgfqn="qt-everywhere-opensource-src-${pkgver}"
+source=("http://download.qt-project.org/official_releases/qt/${pkgver%.*}/${pkgver}/single/${_pkgfqn}.tar.xz"
+        'assistant.desktop' 'designer.desktop' 'linguist.desktop' 'qdbusviewer.desktop'
+        'kdebug-329174.patch'
+        'rpi.patch'
+        'qt5webkit-0002-Fix-QtWebKit-build-on-ARM-softfp.patch'
+        'neon.patch')
+md5sums=('21843b00ecde8956217faab391bc007b'
+         'b2897dd6a2967bccf8f10e397aafee55'
+         '9638a78e502719ef8fe5f8d10d0361a9'
+         '188da8f4c87316e730ebf1c6217bf5a0'
+         '322b419b16c75d4de0ee7ad0a246caa1'
+         'f69ac1589a661f232fb86ad32e293b28'
+         '9fe115d2c1d4778b8cb8e7f1b2e2bca6'
+         'd55ad1f1c90725834b44eada5db4e401'
+         '0904306355f27133af933e1cc9201246')
+
+prepare() {
+  cd ${_pkgfqn}
+  patch  -p0 < ../neon.patch
+  MAKEFLAGS="-j3"
+
+  # Fix building on armv5
+  cd qtwebkit
+  patch -p1 -i "${srcdir}"/qt5webkit-0002-Fix-QtWebKit-build-on-ARM-softfp.patch
+  cd ..
+
+  # Raspberry Pi
+# if [ "$CARCH" == 'armv6h' ]; then
+#   # Removes pkg-config checks for egl and glesv2 which would interfere with our custom paths below.
+#   # Better solution would be to provide a raspberrypi-libgl package which provides 'libgl' and pkg-config modules
+#   # for the egl, glesv2 libs in /opt/vc/. Not sure if that would break other packages, though. So I'm leaving it
+#   # at this for now.
+#   patch -p1 -i "${srcdir}"/rpi.patch
+#
+#   # VideoCore libs and includes
+#   vc_include_dir="/opt/vc/include /opt/vc/include/interface/vcos/pthreads /opt/vc/include/interface/vmcs_host/linux"
+#   vc_lib_dir="/opt/vc/lib"
+#   sed -i "/^QMAKE_INCDIR_OPENGL\s/s|=|= $vc_include_dir|g" qtbase/mkspecs/common/linux.conf
+#   sed -i "/^QMAKE_LIBDIR_OPENGL\s/s|=|= $vc_lib_dir|g" qtbase/mkspecs/common/linux.conf
+#
+#   sed -i "/^QMAKE_INCDIR_EGL\s/s|=|= $vc_include_dir|g" qtbase/mkspecs/common/linux.conf
+#   sed -i "/^QMAKE_LIBDIR_EGL\s/s|=|= $vc_lib_dir|g" qtbase/mkspecs/common/linux.conf
+#   sed -i "/^QMAKE_LIBS_EGL\s/s|= -lEGL|= -lEGL -lGLESv2|g" qtbase/mkspecs/common/linux.conf
+#   sed -i "/^QMAKE_LIBS_OPENGL_ES2\s/s|= -lGLESv2|= -lEGL -lGLESv2|g" qtbase/mkspecs/common/linux.conf
+#
+#   echo "EGLFS_PLATFORM_HOOKS_SOURCES = $PWD/qtbase/mkspecs/devices/linux-rasp-pi-g++/qeglfshooks_pi.cpp" >> qtbase/mkspecs/common/linux.conf
+#   echo "EGLFS_PLATFORM_HOOKS_LIBS = -lbcm_host" >> qtbase/mkspecs/common/linux.conf
+# fi
+
+  sed -i "s|-O2|${CXXFLAGS}|" qtbase/mkspecs/common/{g++,gcc}-base.conf
+  sed -i "/^QMAKE_LFLAGS_RPATH/s| -Wl,-rpath,||g" qtbase/mkspecs/common/gcc-base-unix.conf
+  sed -i "/^QMAKE_LFLAGS\s/s|+=|+= ${LDFLAGS}|g" qtbase/mkspecs/common/gcc-base.conf
+
+  # Use python2 for Python 2.x
+  find . -name '*.py' -exec sed -i \
+    's|#![ ]*/usr/bin/python$|&2|;s|#![ ]*/usr/bin/env python$|&2|' {} +
+
+  # in qtwebengine there are still a lot of relative calls which need a workaround
+  mkdir "${srcdir}"/python2-path
+  ln -s /usr/bin/python2 "${srcdir}"/python2-path/python
+
+  # Fixed in 5.4.1
+  cd qtbase
+  patch -p1 -i "${srcdir}"/kdebug-329174.patch
+
+}
+
+build() {
+  cd ${_pkgfqn}
+  
+  export QTDIR="${srcdir}"/${_pkgfqn}
+  export LD_LIBRARY_PATH="${QTDIR}"/qtbase/lib:"${QTDIR}"/qttools/lib:"${LD_LIBRARY_PATH}"
+  export QT_PLUGIN_PATH="${QTDIR}"/qtbase/plugins
+
+  # python2 workaround
+  export PATH="${srcdir}/python2-path:$PATH"
+  export CFG_CPUFEATURES=neon
+
+
+    PYTHON=/usr/bin/python2 ./configure -confirm-license -opensource \
+    -prefix /usr \
+    -bindir /usr/lib/qt/bin \
+    -docdir /usr/share/doc/qt \
+    -headerdir /usr/include/qt \
+    -archdatadir /usr/lib/qt \
+    -datadir /usr/share/qt \
+    -sysconfdir /etc/xdg \
+    -examplesdir /usr/share/doc/qt/examples \
+    -plugin-sql-{psql,mysql,sqlite,odbc} \
+    -system-sqlite \
+    -openssl-linked \
+    -nomake examples \
+    -nomake tests \
+    -no-rpath \
+    -optimized-qmake \
+    -dbus-linked \
+    -system-harfbuzz \
+    -journald \
+    -no-sse2 \
+    -no-sse3 \
+    -no-ssse3 \
+    -no-sse4.1 \
+    -no-sse4.2 \
+    -no-avx \
+    -no-avx2 \
+    -opengl es2 \
+    -skip webengine 
+
+
+  make
+
+  # Fix docs build when qt is not installed
+#   sed -i "s|/usr/lib/qt/bin/qdoc|${QTDIR}/qtbase/bin/qdoc|g" \
+#     "${QTDIR}"/qtbase/qmake/Makefile.qmake-docs
+#   find "${QTDIR}" -name Makefile \
+#     -exec sed -i "s|/usr/lib/qt/bin/qdoc|${QTDIR}/qtbase/bin/qdoc|g" {} +
+#   sed -i "s|/usr/lib/qt/bin/qhelpgenerator|${QTDIR}/qttools/bin/qhelpgenerator|g" \
+#     "${QTDIR}"/qtbase/qmake/Makefile.qmake-docs
+#   find "${QTDIR}" -name Makefile \
+#     -exec sed -i "s|/usr/lib/qt/bin/qhelpgenerator|${QTDIR}/qttools/bin/qhelpgenerator|g" {} +
+#   sed -i "s|/usr/lib/qt/bin/qhelpgenerator|${QTDIR}/qttools/bin/qhelpgenerator|g" \
+#     qtwebkit/Source/Makefile.api
+#   find "${QTDIR}" -name Makefile \
+#     -exec sed -i "s|/usr/lib/qt/bin/qmlplugindump|${QTDIR}/qtdeclarative/bin/qmlplugindump|g" {} +
+
+  make docs
+}
+
+package_qt5-base-neon() {
+  pkgdesc='A cross-platform application and UI framework'
+  depends=('libjpeg-turbo' 'xcb-util-keysyms' 'dbus' 'fontconfig' 'systemd'
+           'xcb-util-wm' 'libxrender' 'libxi' 'sqlite' 'xcb-util-image' 'icu'
+           'qtchooser' 'libgl')
+  optdepends=('postgresql-libs: PostgreSQL driver'
+              'libmariadbclient: MariaDB driver'
+              'unixodbc: ODBC driver'
+              'mtdev: evdev plugin'
+              'libxkbcommon-x11: xcb plugin'
+              'libsm: xcb plugin'
+              'gtk2: GTK2 plugin')
+  conflicts=('qt' 'qt5-base')
+  provides=('qt5-base')
+
+  cd ${_pkgfqn}/qtbase
+  make INSTALL_ROOT="${pkgdir}" install
+  
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+
+  # Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+  find "${pkgdir}/usr/lib" -type f -name '*.prl' \
+    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+
+  # Fix wrong qmake path in pri file
+  sed -i "s|${srcdir}/${_pkgfqn}/qtbase|/usr|" \
+    "${pkgdir}"/usr/lib/qt/mkspecs/modules/qt_lib_bootstrap_private.pri
+
+  # Useful symlinks
+  install -d "${pkgdir}"/usr/bin
+  for b in "${pkgdir}"/usr/lib/qt/bin/*; do
+    ln -s /usr/lib/qt/bin/$(basename $b) "${pkgdir}"/usr/bin/$(basename $b)-qt5
+  done
+}
+
+package_qt5-connectivity-neon() {
+  pkgdesc='Provides access to Bluetooth hardware'
+  depends=('qt5-declarative-neon' 'bluez-libs')
+  conflicts=('qt5-connectivity')
+  provides=('qt5-connectivity')
+  
+  cd ${_pkgfqn}/qtconnectivity
+  make INSTALL_ROOT="${pkgdir}" install
+
+  # Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+  find "${pkgdir}/usr/lib" -type f -name '*.prl' \
+    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+}
+
+package_qt5-declarative-neon() {
+  pkgdesc='Classes for QML and JavaScript languages'
+  depends=('qt5-xmlpatterns-neon' 'libxkbcommon-x11')
+  conflicts=('qt' 'qt5-declarative')
+  provides=('qt5-declarative')
+
+  cd ${_pkgfqn}/qtdeclarative
+  make INSTALL_ROOT="${pkgdir}" install
+  
+  # Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+  find "${pkgdir}/usr/lib" -type f -name '*.prl' \
+    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+  
+  # Useful symlinks
+  install -d "${pkgdir}"/usr/bin
+  for b in "${pkgdir}"/usr/lib/qt/bin/*; do
+    ln -s /usr/lib/qt/bin/$(basename $b) "${pkgdir}"/usr/bin/$(basename $b)-qt5
+  done
+
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+}
+
+package_qt5-doc-neon() {
+  pkgdesc='A cross-platform application and UI framework (Documentation)'
+  depends=('qt5-base-neon')
+#  arch=('any')
+  conflicts=('qt-doc' 'qt5-doc')
+  replaces=('qt-doc')
+  provides=('qt-doc' 'qt5-doc')
+  options=('docs' '!emptydirs')
+  groups=()
+
+  cd ${_pkgfqn}
+  make INSTALL_ROOT="${pkgdir}" install_docs
+
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+}
+
+package_qt5-enginio-neon() {
+  pkgdesc='A Backend-as-a-Service solution to ease the backend development for connected and data-driven application'
+  depends=('qt5-declarative-neon')
+  conflicts=('qt5-enginio')
+  provides=('qt5-enginio')
+  
+  cd ${_pkgfqn}/qtenginio
+  make INSTALL_ROOT="${pkgdir}" install
+
+  # Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+  find "${pkgdir}/usr/lib" -type f -name '*.prl' \
+    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+}
+
+package_qt5-xmlpatterns-neon() {
+  pkgdesc='Support for XPath, XQuery, XSLT and XML schema validation'
+  depends=('qt5-base-neon')
+  conflicts=('qt' 'qt5-xmlpatterns')
+  provides=('qt5-xmlpatterns')
+
+  cd ${_pkgfqn}/qtxmlpatterns
+  make INSTALL_ROOT="${pkgdir}" install
+
+  # Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+  find "${pkgdir}/usr/lib" -type f -name '*.prl' \
+    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+  
+  # Useful symlinks
+  install -d "${pkgdir}"/usr/bin
+  for b in "${pkgdir}"/usr/lib/qt/bin/*; do
+    ln -s /usr/lib/qt/bin/$(basename $b) "${pkgdir}"/usr/bin/$(basename $b)-qt5
+  done
+
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+}
+
+package_qt5-translations-neon() {
+  pkgdesc='A cross-platform application and UI framework (Translations)'
+  depends=('qt5-base-neon')
+  optdepends=('gstreamer0.10-bad: Qt MediaService plugin')
+  conflicts=('qt' 'qt5-translations')
+  provides=('qt5-translations')
+
+  cd ${_pkgfqn}/qttranslations
+  make INSTALL_ROOT="${pkgdir}" install
+
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+}
+
+package_qt5-multimedia-neon() {
+  pkgdesc='Classes for audio, video, radio and camera functionality'
+  depends=('qt5-declarative-neon' 'libpulse' 'gstreamer0.10-base' 'openal')
+  conflicts=('qt' 'qt5-multimedia')
+  provides=('qt5-multimedia')
+
+  cd ${_pkgfqn}/qtmultimedia
+  make INSTALL_ROOT="${pkgdir}" install
+
+  # Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+  find "${pkgdir}/usr/lib" -type f -name '*.prl' \
+    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+}
+
+package_qt5-graphicaleffects-neon() {
+  pkgdesc='Graphical effects for use with Qt Quick 2'
+  depends=('qt5-declarative-neon')
+  conflicts=('qt5-graphicaleffects')
+  provides=('qt5-graphicaleffects')
+  
+  cd ${_pkgfqn}/qtgraphicaleffects
+  make INSTALL_ROOT="${pkgdir}" install
+
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+}
+
+package_qt5-imageformats-neon() {
+  pkgdesc='Plugins for additional image formats: TIFF, MNG, TGA, WBMP'
+  depends=('qt5-base-neon' 'jasper' 'libmng' 'libwebp')
+  conflicts=('qt' 'qt5-imageformats')
+  provides=('qt5-imageformats')
+
+  cd ${_pkgfqn}/qtimageformats
+  make INSTALL_ROOT="${pkgdir}" install
+
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+}
+
+package_qt5-location-neon() {
+  pkgdesc='Provides access to position, satellite and area monitoring classes'
+  depends=('qt5-declarative-neon' 'geoclue')
+  conflicts=('qt5-location')
+  provides=('qt5-location')
+  
+  cd ${_pkgfqn}/qtlocation
+  make INSTALL_ROOT="${pkgdir}" install
+
+  # Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+  find "${pkgdir}/usr/lib" -type f -name '*.prl' \
+    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+}
+
+package_qt5-quick1-neon() {
+  pkgdesc='Qt Declarative is provided for Qt 4 compatibility'
+  depends=('qt5-webkit-neon' 'qt5-script-neon')
+  conflicts=('qt' 'qt5-quick1')
+  provides=('qt5-quick1')
+
+  cd ${_pkgfqn}/qtquick1
+  make INSTALL_ROOT="${pkgdir}" install
+  
+  # Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+  find "${pkgdir}/usr/lib" -type f -name '*.prl' \
+    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+
+  # Useful symlinks
+  install -d "${pkgdir}"/usr/bin
+  for b in "${pkgdir}"/usr/lib/qt/bin/*; do
+    ln -s /usr/lib/qt/bin/$(basename $b) "${pkgdir}"/usr/bin/$(basename $b)-qt5
+  done
+
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+}
+
+package_qt5-quickcontrols-neon() {
+  pkgdesc='Reusable Qt Quick based UI controls to create classic desktop-style user interfaces'
+  depends=('qt5-declarative-neon')
+  conflicts=('qt5-quickcontrols')
+  provides=('qt5-quickcontrols')  
+
+  cd ${_pkgfqn}/qtquickcontrols
+  make INSTALL_ROOT="${pkgdir}" install
+
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+}
+
+package_qt5-script-neon() {
+  pkgdesc='Classes for making Qt applications scriptable. Provided for Qt 4.x compatibility'
+  depends=('qt5-base-neon')
+  conflicts=('qt' 'qt5-script')
+  provides=('qt5-script')
+
+  cd ${_pkgfqn}/qtscript
+  make INSTALL_ROOT="${pkgdir}" install
+  
+  # Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+  find "${pkgdir}/usr/lib" -type f -name '*.prl' \
+    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+}
+
+package_qt5-sensors-neon() {
+  pkgdesc='Provides access to sensor hardware and motion gesture recognition'
+  depends=('qt5-declarative-neon')
+  conflicts=('qt5-sensors')
+  provides=('qt5-sensors')
+
+  cd ${_pkgfqn}/qtsensors
+  make INSTALL_ROOT="${pkgdir}" install
+  
+  # Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+  find "${pkgdir}/usr/lib" -type f -name '*.prl' \
+    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+}
+
+package_qt5-serialport-neon() {
+  pkgdesc='Provides access to hardware and virtual serial ports'
+  depends=('qt5-base-neon')
+  conflicts=('qt5-serialport')
+  provides=('qt5-serialport')  
+  
+  cd ${_pkgfqn}/qtserialport
+  make INSTALL_ROOT="${pkgdir}" install
+  
+  # Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+  find "${pkgdir}/usr/lib" -type f -name '*.prl' \
+    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+}
+
+package_qt5-svg-neon() {
+  pkgdesc='Classes for displaying the contents of SVG files'
+  depends=('qt5-base-neon')
+  conflicts=('qt' 'qt5-svg')
+  provides=('qt5-svg')
+
+  cd ${_pkgfqn}/qtsvg
+  make INSTALL_ROOT="${pkgdir}" install
+  
+  # Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+  find "${pkgdir}/usr/lib" -type f -name '*.prl' \
+    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+}
+  
+package_qt5-tools-neon() {
+  pkgdesc='A cross-platform application and UI framework (Development Tools, QtHelp)'
+  depends=('qt5-webkit-neon' 'desktop-file-utils' 'qt5-translations-neon' 'hicolor-icon-theme'
+           'xdg-utils')
+  optdepends=('qt5-doc: documentation')
+  install='qt5-tools.install'
+  conflicts=('qt' 'qt5-tools')
+  provides=('qt5-tools')
+  options=('staticlibs') # libQt5UiTools builds as static only
+
+  cd ${_pkgfqn}/qttools
+  make INSTALL_ROOT="${pkgdir}" install
+  
+  # install missing icons and desktop files
+  for icon in src/linguist/linguist/images/icons/linguist-*-32.png ; do
+    size=$(echo $(basename ${icon}) | cut -d- -f2)
+    install -p -D -m644 ${icon} \
+      "${pkgdir}/usr/share/icons/hicolor/${size}x${size}/apps/linguist.png"
+  done
+
+  install -D -m644 src/assistant/assistant/images/assistant.png \
+    "${pkgdir}/usr/share/icons/hicolor/32x32/apps/assistant.png"
+  install -D -m644 src/assistant/assistant/images/assistant-128.png \
+    "${pkgdir}/usr/share/icons/hicolor/128x128/apps/assistant.png"
+  install -D -m644 src/designer/src/designer/images/designer.png \
+    "${pkgdir}/usr/share/icons/hicolor/128x128/apps/designer.png"
+  install -D -m644 src/qdbus/qdbusviewer/images/qdbusviewer.png \
+    "${pkgdir}/usr/share/icons/hicolor/32x32/apps/qdbusviewer.png"
+  install -D -m644 src/qdbus/qdbusviewer/images/qdbusviewer-128.png \
+    "${pkgdir}/usr/share/icons/hicolor/128x128/apps/qdbusviewer.png"
+  install -d "${pkgdir}/usr/share/applications"
+  install -m644 "${srcdir}"/{linguist,designer,assistant,qdbusviewer}.desktop \
+    "${pkgdir}/usr/share/applications/"
+
+  # Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+  find "${pkgdir}/usr/lib" -type f -name '*.prl' \
+    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+  
+  # Useful symlinks
+  install -d "${pkgdir}"/usr/bin
+  for b in "${pkgdir}"/usr/lib/qt/bin/*; do
+    ln -s /usr/lib/qt/bin/$(basename $b) "${pkgdir}"/usr/bin/$(basename $b)-qt5
+  done
+
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+}
+
+package_qt5-webkit-neon() {
+  pkgdesc='Classes for a WebKit2 based implementation and a new QML API'
+  depends=('qt5-sensors-neon' 'qt5-location-neon' 'qt5-webchannel-neon' 'gst-plugins-base' 'libxslt'
+           'libxcomposite' 'libwebp')
+  optdepends=('gst-plugins-good: Webm codec support')
+  conflicts=('qt5-webkit')
+  provides=('qt5-webkit')
+  license=('GPL3' 'LGPL' 'FDL')
+
+  cd ${_pkgfqn}/qtwebkit
+  make INSTALL_ROOT="${pkgdir}" install
+  
+  # Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+  find "${pkgdir}/usr/lib" -type f -name '*.prl' \
+    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+
+  # Fix wrong path in pc file
+  perl -pi -e "s, -L${srcdir}/?\S+,,g" "${pkgdir}"/usr/lib/pkgconfig/Qt5WebKit.pc
+}
+
+package_qt5-wayland-neon() {
+  pkgdesc='Provides APIs for Wayland'
+  depends=('qt5-base-neon' 'libxcomposite' 'libxkbcommon')
+  conflicts=('qt5-wayland')
+  provides=('qt5-wayland')
+  cd ${_pkgfqn}/qtwayland
+  make INSTALL_ROOT="${pkgdir}" install
+
+  # Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+  find "${pkgdir}/usr/lib" -type f -name '*.prl' \
+    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+}
+
+package_qt5-webchannel-neon() {
+  pkgdesc='Provides access to QObject or QML objects from HTML clients for seamless integration of Qt applications with HTML/JavaScript clients'
+  depends=('qt5-declarative-neon')
+  conflicts=('qt5-webchannel')
+  provides=('qt5-webchannel')  
+
+  cd ${_pkgfqn}/qtwebchannel
+  make INSTALL_ROOT="${pkgdir}" install
+
+  # Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+  find "${pkgdir}/usr/lib" -type f -name '*.prl' \
+    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+}
+
+package_qt5-websockets-neon() {
+  pkgdesc='Provides WebSocket communication compliant with RFC 6455'
+  depends=('qt5-declarative-neon')
+  license=('LGPL')
+  conflicts=('qt5-websockets')
+  provides=('qt5-websockets')    
+
+  cd ${_pkgfqn}/qtwebsockets
+  make INSTALL_ROOT="${pkgdir}" install
+
+  # Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+  find "${pkgdir}/usr/lib" -type f -name '*.prl' \
+    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+}
+
+package_qt5-x11extras-neon() {
+  pkgdesc='Provides platform-specific APIs for X11'
+  depends=('qt5-base-neon')
+  conflicts=('qt5-x11extras')
+  provides=('qt5-x11extras')      
+  cd ${_pkgfqn}/qtx11extras
+  make INSTALL_ROOT="${pkgdir}" install
+  
+  # Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+  find "${pkgdir}/usr/lib" -type f -name '*.prl' \
+    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+
+  install -D -m644 LGPL_EXCEPTION.txt \
+    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+}
