@@ -218,19 +218,18 @@
  
  int
  DRI2SwapBuffers(ClientPtr client, DrawablePtr pDraw, CARD64 target_msc,
-@@ -1549,6 +1554,12 @@
-         if (!ds->driverNames)
-             goto err_out;
-         ds->driverNames[0] = info->driverName;
-+
+@@ -1583,6 +1604,11 @@
+ 
+         if (info->driverName) {
+             ds->driverNames[0] = info->driverName;
 +        /* Mali incorrectly assumes that a return from SwapBuffers means that
 +         * buffers have been swapped, it doesn't wait for the relevant event.
 +         * In this case, we work around this annoyance by delaying the
 +         * SwapBuffers reply until the swap has actually completed. */
 +        ds->need_async_swapbuffers_reply = strcmp(info->driverName, "armsoc") == 0;
-     }
-     else {
-         ds->numDrivers = info->numDrivers;
+         } else {
+             ds->driverNames[0] = ds->driverNames[1] = dri2_probe_driver_name(pScreen, info);
+             if (!ds->driverNames[0])
 --- xorg-server-1.13.3.orig/hw/xfree86/dri2/dri2.h	2014-02-25 11:53:24.965926993 -0600
 +++ xorg-server-1.13.3/hw/xfree86/dri2/dri2.h	2014-02-25 11:53:24.961926959 -0600
 @@ -359,4 +359,6 @@

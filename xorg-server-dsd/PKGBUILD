@@ -1,12 +1,13 @@
 # $Id: PKGBUILD 222863 2014-09-23 15:05:53Z lcarlier $
 # Maintainer: AndyRTR <andyrtr@archlinux.org>
 # Maintainer: Jan de Groot <jgc@archlinux.org>
+# Modifier: gripped <forum.odroid.com> credit to Daniel Drake (dsd)  for the patch
 
 pkgbase=xorg-server-dsd
 _pkgbase=xorg-server
 pkgname=('xorg-server-dsd' 'xorg-server-xephyr' 'xorg-server-xdmx' 'xorg-server-xvfb' 'xorg-server-xnest' 'xorg-server-xwayland' 'xorg-server-common' 'xorg-server-devel')
-pkgver=1.16.3
-pkgrel=2 # build first with 0.1 and then rebuild it after xf86-input-evdev rebuild
+pkgver=1.17.1
+pkgrel=1 # build first with 0.1 and then rebuild it after xf86-input-evdev rebuild
 arch=('i686' 'x86_64')
 license=('custom')
 url="http://xorg.freedesktop.org"
@@ -15,17 +16,17 @@ makedepends=('pixman' 'libx11' 'mesa' 'mesa-libgl' 'xf86driproto' 'xcmiscproto' 
              'resourceproto' 'xineramaproto' 'libxkbfile' 'libxfont' 'renderproto' 'libpciaccess' 'libxv'
              'xf86dgaproto' 'libxmu' 'libxrender' 'libxi' 'dmxproto' 'libxaw' 'libdmx' 'libxtst' 'libxres'
              'xorg-xkbcomp' 'xorg-util-macros' 'xorg-font-util' 'glproto' 'dri2proto' 'libgcrypt' 'libepoxy'
-             'xcb-util' 'xcb-util-image' 'xcb-util-wm' 'xcb-util-keysyms' 'dri3proto' 'libxshmfence') 
-source=(${url}/releases/individual/xserver/${_pkgbase}-${pkgver}.tar.bz2
-        autoconfig-nvidia.patch
-        autoconfig-sis.patch
+             'xcb-util' 'xcb-util-image' 'xcb-util-renderutil' 'xcb-util-wm' 'xcb-util-keysyms' 'dri3proto'
+             'libxshmfence')
+source=(${url}/releases/individual/xserver/${_pkgbase}-${pkgver}.tar.bz2{,.sig}
         nvidia-drm-outputclass.conf
         xvfb-run
         xvfb-run.1
-	dsd.patch)
-sha256sums=('5e0f443238af1078b48f6eea98a382861b59187da221c2cf714d31c1d560b0fb'
-            '66e25f76a7496c429e0aff4b0670f168719bb0ceaeb88c6f2272f2bf3ed21162'
-            'd027776fac1f7675b0a9ee817502290b1c45f9c09b0f0a6bb058c35f92361e84'
+	   dsd.patch)
+validpgpkeys=('7B27A3F1A6E18CD9588B4AE8310180050905E40C'
+              'C383B778255613DFDB409D91DB221A6900000011')   
+sha256sums=('2bf8e9f6f0a710dec1d2472467bff1f4e247cb6dcd76eb469aafdc8a2d7db2ab'
+            'SKIP'
             'af1c3d2ea5de7f6a6b5f7c60951a189a4749d1495e5462f3157ae7ac8fe1dc56'
             'ff0156309470fc1d378fd2e104338020a884295e285972cc88e250e031cc35b9'
             '2460adccd3362fefd4cdc5f1c70f332d7b578091fb9167bf88b5f91265bbd776'
@@ -33,19 +34,19 @@ sha256sums=('5e0f443238af1078b48f6eea98a382861b59187da221c2cf714d31c1d560b0fb'
 
 prepare() {
   cd "${_pkgbase}-${pkgver}"
-  # Use unofficial imedia SiS driver for supported SiS devices
-  patch -Np0 -i ../autoconfig-sis.patch
   # outputclass config file works only when nvidia-drm kernel driver is exposed
   # this means that older drivers (304xx and before) aren't currently supported
   # Use nouveau/nv/nvidia drivers for nvidia devices
-  patch -Np1 -i ../autoconfig-nvidia.patch
   patch -p1 -i ../dsd.patch
 }
 
 build() {
   cd "${_pkgbase}-${pkgver}"
+  # Xorg isn't feeling -O3
+  CFLAGS=${CFLAGS/-O3/-O2}
+  
   autoreconf -fi
-  ./configure --prefix=/usr \
+        ./configure --prefix=/usr \
       --enable-ipv6 \
       --enable-dri \
       --enable-dmx \
@@ -70,13 +71,12 @@ build() {
       --disable-xfbdev \
       --disable-xfake \
       --disable-static \
-      --libexecdir=/usr/bin \
+      --libexecdir=/usr/lib/xorg-server \
       --sysconfdir=/etc \
       --localstatedir=/var \
       --with-xkb-path=/usr/share/X11/xkb \
       --with-xkb-output=/var/lib/xkb \
-      --with-fontrootdir=/usr/share/fonts
-      
+      --with-fontrootdir=/usr/share/fonts 
 #      --without-dtrace \
 #      --disable-linux-acpi --disable-linux-apm \
 
@@ -113,10 +113,10 @@ package_xorg-server-dsd() {
   depends=(libepoxy libxdmcp libxfont libpciaccess libdrm pixman libgcrypt libxau xorg-server-common xf86-input-evdev libxshmfence libgl)
   # see xorg-server-*/hw/xfree86/common/xf86Module.h for ABI versions - we provide major numbers that drivers can depend on
   # and /usr/lib/pkgconfig/xorg-server.pc in xorg-server-devel pkg
-  provides=('X-ABI-VIDEODRV_VERSION=18' 'X-ABI-XINPUT_VERSION=21' 'X-ABI-EXTENSION_VERSION=8.0' 'x-server' 'xorg-server')
+  provides=('X-ABI-VIDEODRV_VERSION=19' 'X-ABI-XINPUT_VERSION=21' 'X-ABI-EXTENSION_VERSION=9.0' 'x-server' 'xorg-server')
   groups=('xorg')
-  conflicts=('nvidia-utils<=331.20' 'glamor-egl' 'xorg-server')
-  replaces=('glamor-egl')
+  conflicts=('nvidia-utils<=331.20' 'glamor-egl' 'xorg-server' 'xf86-video-modesetting')
+  replaces=('glamor-egl' 'xf86-video-modesetting')
   install=xorg-server.install
 
   cd "${_pkgbase}-${pkgver}"
@@ -145,7 +145,8 @@ package_xorg-server-dsd() {
 
 package_xorg-server-xephyr() {
   pkgdesc="A nested X server that runs as an X application"
-  depends=(libxfont libgl libepoxy libgcrypt libxv pixman xorg-server-common 'xcb-util-image' 'xcb-util-wm' 'xcb-util-keysyms')
+  depends=(libxfont libgl libepoxy libgcrypt libxv pixman xorg-server-common 'xcb-util-renderutil'
+                   'xcb-util-image' 'xcb-util-wm' 'xcb-util-keysyms')
 
   cd "${_pkgbase}-${pkgver}/hw/kdrive"
   make DESTDIR="${pkgdir}" install
@@ -219,6 +220,7 @@ package_xorg-server-devel() {
   rm -rf "${pkgdir}/usr/share/doc"
   rm -rf "${pkgdir}/usr/share/X11"
   rm -rf "${pkgdir}/usr/lib/xorg"
+  rm -rf "${pkgdir}/usr/lib/xorg-server"
   rm -rf "${pkgdir}/var"
 
   install -m755 -d "${pkgdir}/usr/share/licenses/xorg-server-devel"
