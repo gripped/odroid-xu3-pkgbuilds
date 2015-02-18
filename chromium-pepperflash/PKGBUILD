@@ -1,0 +1,27 @@
+# Maintainer: Justin Dray <justin@dray.be>
+# Modifier:   gripped <forum.odroid.com> 
+
+pkgname=chromium-pepperflash
+pkgdesc="Google Chrome's Pepper Flash plugin for Chromium on armv7h"
+pkgver=16.0.0.305.r1
+_pkgver=16.0.0.305-r1
+pkgrel=1
+arch=('armv7h')
+url="http://www.google.com/chrome"
+license=('custom:chrome')
+depends=('chromium')
+provides=("chromium-pepper-flash=${pkgver}")
+optdepends=('pulseaudio-alsa: For PulseAudio users')
+conflicts=('chromium-pepper-flash')
+install=chromium-pepperflash.install
+source=('license.html::http://www.google.com/chrome/intl/en/eula_text.html'
+         "http://odroidxu.leeharris.me.uk/PepperFlash-${_pkgver}.tar.gz")
+md5sums=('SKIP'
+         '8168a3dc5060b902653a9cd409c7566c')
+
+package() {
+	install -d "${pkgdir}/usr/lib/PepperFlash"
+	install -m644 ${srcdir}/libpepflashplayer.so "${pkgdir}/usr/lib/PepperFlash"
+	sed -i "s/flashver=.*/flashver=${_pkgver}/" "${startdir}/chromium-pepperflash.install"
+	install -Dm644 "${srcdir}/license.html" "${pkgdir}/usr/share/licenses/${pkgname}/license.html"
+}

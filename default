@@ -1,0 +1,5 @@
+# Default settings for chromium. This file is sourced by /usr/bin/chromium
+
+# Options to pass to chromium
+#CHROMIUM_FLAGS=" --use-gl=egl --ppapi-flash-path=/usr/lib/PepperFlash/libpepflashplayer.so --ppapi-flash-version=12.0.0.77"
+#CHROMIUM_FLAGS=" --use-gl=egl --ppapi-flash-path=/usr/lib/PepperFlash/libpepflashplayer.so --ppapi-flash-version=16.0.0.305-r1"
