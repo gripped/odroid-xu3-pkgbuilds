@@ -14,10 +14,10 @@ _prefix=/usr
 
 pkgbase=kodi-xu3
 pkgname=('kodi-xu3' 'kodi-eventclients-xu3')
-pkgver=14.1
+pkgver=14.1.802
 _codename=Helix
-_commit=ca0f6ac8d2f7694c88556f3fa5afdb38f1cfaa82
-pkgrel=2
+_commit=765bc88fd8a7015b1424fa898849bb1a70211b74
+pkgrel=1
 arch=('i686' 'x86_64')
 url="http://kodi.tv"
 license=('GPL2')
@@ -36,7 +36,7 @@ source=(
   '51-cec.rules'
 )
 sha256sums=(
-  'b1b27550b82d4fb539965feb2d5a02501e36489d75216c0294b3d93151b994c2'
+  'cb8ff7228bd84f2a8b4ddf15e707dc6c76141297480b2efcc27d1c9e9933c137'
   'caff0bc804525a9be02c3d5ae0d93424faa99b56aa597f6c2beb0273a6df3bb7'
   '42d5adfb911e889134f8b81b509fc15a145e4b3e78be9505a46c47a36100e96f'
 )
@@ -71,8 +71,7 @@ build() {
     --disable-openmax \
     --disable-vaapi \
     --disable-vdpau \
-    --enable-codec=mfc \
-    CFLAGS="${CFLAGS} -lmali" CXXFLAGS="${CXXFLAGS} -lmali"
+    --enable-codec=mfc
 
   # Now (finally) build
   make
