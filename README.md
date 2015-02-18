@@ -1,4 +1,5 @@
 odroid-xu3-pkgbuilds
 ====================
 
-Still work to be done!
+Slightly more info.
+http://forum.odroid.com/viewtopic.php?f=96&t=8334
