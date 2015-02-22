@@ -1,0 +1,13 @@
+post_install() {
+  message
+}
+
+post_upgrade() {
+  message
+}
+message() {
+  bold=`tput bold`
+  boff=`tput sgr0`
+  echo ""
+  echo "${bold}Move /usr/share/mali/xorg.conf.example to /etc/xorg.conf if you need to${boff}"
+}
