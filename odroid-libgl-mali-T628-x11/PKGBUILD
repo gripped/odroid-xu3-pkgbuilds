@@ -20,7 +20,7 @@ source=("http://malideveloper.arm.com/downloads/drivers/binary/${_pkgver}/mali-t
 	'50-mali.rules'
 	'xorg.conf.example')
 md5sums=('27c00dd067d8d8a185a17c657aab16f0'
-	 '5788aedbfc54581e032cc881cbccb66b'
+	 '4bb3aacb426b83c4134ebc627c210876'
 	 '058d139371185145bcc7dfd5b33413d6'
 	 'bbf535435eec03caa207a2d955077ed4')
 
