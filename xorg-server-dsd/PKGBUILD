@@ -7,7 +7,7 @@ pkgbase=xorg-server-dsd
 _pkgbase=xorg-server
 pkgname=('xorg-server-dsd' 'xorg-server-xephyr' 'xorg-server-xdmx' 'xorg-server-xvfb' 'xorg-server-xnest' 'xorg-server-xwayland' 'xorg-server-common' 'xorg-server-devel')
 pkgver=1.17.1
-pkgrel=1 # build first with 0.1 and then rebuild it after xf86-input-evdev rebuild
+pkgrel=3 # build first with 0.1 and then rebuild it after xf86-input-evdev rebuild
 arch=('i686' 'x86_64')
 license=('custom')
 url="http://xorg.freedesktop.org"
@@ -17,27 +17,33 @@ makedepends=('pixman' 'libx11' 'mesa' 'mesa-libgl' 'xf86driproto' 'xcmiscproto' 
              'xf86dgaproto' 'libxmu' 'libxrender' 'libxi' 'dmxproto' 'libxaw' 'libdmx' 'libxtst' 'libxres'
              'xorg-xkbcomp' 'xorg-util-macros' 'xorg-font-util' 'glproto' 'dri2proto' 'libgcrypt' 'libepoxy'
              'xcb-util' 'xcb-util-image' 'xcb-util-renderutil' 'xcb-util-wm' 'xcb-util-keysyms' 'dri3proto'
-             'libxshmfence')
+             'libxshmfence' 'libunwind')
 source=(${url}/releases/individual/xserver/${_pkgbase}-${pkgver}.tar.bz2{,.sig}
         nvidia-drm-outputclass.conf
         xvfb-run
         xvfb-run.1
-	   dsd.patch)
+        dsd.patch
+        os-access-fix-regression-in-server-interpreted-auth.patch
+        v2-xserver-Fix-a-crash-with-XDMCP-error-handler.patch)
+           
 validpgpkeys=('7B27A3F1A6E18CD9588B4AE8310180050905E40C'
               'C383B778255613DFDB409D91DB221A6900000011')   
 sha256sums=('2bf8e9f6f0a710dec1d2472467bff1f4e247cb6dcd76eb469aafdc8a2d7db2ab'
             'SKIP'
             'af1c3d2ea5de7f6a6b5f7c60951a189a4749d1495e5462f3157ae7ac8fe1dc56'
             'ff0156309470fc1d378fd2e104338020a884295e285972cc88e250e031cc35b9'
-            '2460adccd3362fefd4cdc5f1c70f332d7b578091fb9167bf88b5f91265bbd776'
-	    'SKIP')
+            '2460adccd3362fefd4cdc5f1c70f332d7b578091fb9167bf88b5f91265bbd776'                                 
+            '2dd8de3a6b0ecc65d273033ba7de0d02141f02632a851105fb660a3cfbe3245b'                                 
+            'ddf81107ef1781fc2ef162496842b7dc337b7e098e2ccb160ed040966b47a684'                                 
+            'ebdf135ed0df190913ebe0701f8bbfa9ca695d06171a85b82ff7346e5de0ba46')
 
 prepare() {
   cd "${_pkgbase}-${pkgver}"
-  # outputclass config file works only when nvidia-drm kernel driver is exposed
-  # this means that older drivers (304xx and before) aren't currently supported
-  # Use nouveau/nv/nvidia drivers for nvidia devices
   patch -p1 -i ../dsd.patch
+  # fix FS#43884, not yet upstream
+  patch -Np1 -i ../os-access-fix-regression-in-server-interpreted-auth.patch
+  # partially fix FS#43867, not yet upstream
+  patch -Np1 -i ../v2-xserver-Fix-a-crash-with-XDMCP-error-handler.patch
 }
 
 build() {
@@ -54,6 +60,7 @@ build() {
       --enable-xnest \
       --enable-composite \
       --enable-xcsecurity \
+      --enable-libunwind \
       --enable-xorg \
       --enable-xephyr \
       --enable-glamor \
@@ -76,7 +83,8 @@ build() {
       --localstatedir=/var \
       --with-xkb-path=/usr/share/X11/xkb \
       --with-xkb-output=/var/lib/xkb \
-      --with-fontrootdir=/usr/share/fonts 
+      --with-fontrootdir=/usr/share/fonts \
+      --with-sha1=libgcrypt
 #      --without-dtrace \
 #      --disable-linux-acpi --disable-linux-apm \
 
@@ -93,7 +101,8 @@ build() {
 
 package_xorg-server-common() {
   pkgdesc="Xorg server common files"
-  depends=('xkeyboard-config' 'xorg-xkbcomp' 'xorg-setxkbmap' 'xorg-fonts-misc')
+  depends=('xkeyboard-config' 'xorg-xkbcomp' 'xorg-setxkbmap' 'xorg-fonts-misc'
+                  'libunwind')
 
   cd "${_pkgbase}-${pkgver}"
   install -m755 -d "${pkgdir}/usr/share/licenses/xorg-server-common"
@@ -157,7 +166,7 @@ package_xorg-server-xephyr() {
 
 package_xorg-server-xvfb() {
   pkgdesc="Virtual framebuffer X server"
-  depends=(libxfont libxdmcp libxau libgcrypt pixman xorg-server-common xorg-xauth)
+  depends=(libxfont libxdmcp libxau libgcrypt pixman xorg-server-common xorg-xauth libgl)
 
   cd "${_pkgbase}-${pkgver}/hw/vfb"
   make DESTDIR="${pkgdir}" install
@@ -171,7 +180,7 @@ package_xorg-server-xvfb() {
 
 package_xorg-server-xnest() {
   pkgdesc="A nested X server that runs as an X application"
-  depends=(libxfont libxext libgcrypt pixman xorg-server-common)
+  depends=(libxfont libxext libgcrypt pixman xorg-server-common libsystemd)
 
   cd "${_pkgbase}-${pkgver}/hw/xnest"
   make DESTDIR="${pkgdir}" install
