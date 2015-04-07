@@ -1,0 +1,19 @@
+--- src/drmmode_exynos/drmmode_exynos.c.orig	2015-04-06 23:04:34.177157992 +0000
++++ src/drmmode_exynos/drmmode_exynos.c	2015-04-06 23:06:34.067264875 +0000
+@@ -41,6 +41,7 @@
+ 
+ #define EXYNOS_BO_CONTIG 0
+ #define EXYNOS_BO_NONCONTIG 1
++#define EXYNOS_BO_WC (1 << 2)
+ 
+ struct drm_exynos_gem_create {
+ 	uint64_t size;
+@@ -130,7 +131,7 @@
+ 	 * When they are supported all allocations are effectively contiguous
+ 	 * anyway, so for simplicity we always request non contiguous buffers.
+ 	 */
+-	create_exynos.flags = EXYNOS_BO_NONCONTIG;
++	create_exynos.flags = EXYNOS_BO_NONCONTIG | EXYNOS_BO_WC;
+ 
+ 	ret = drmIoctl(fd, DRM_IOCTL_EXYNOS_GEM_CREATE, &create_exynos);
+ 	if (ret)

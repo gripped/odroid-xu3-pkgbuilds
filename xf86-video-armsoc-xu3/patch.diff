@@ -10,15 +10,4 @@ diff -Naur xf86-video-armsoc-dsd/src/Makefile.am xf86-video-armsoc-dsd.new/src/M
  	-Wpointer-arith -Wmissing-declarations -Wmissing-prototypes \
  	-Wwrite-strings -Wformat-nonliteral  -Wformat-security \
  	-Wold-style-definition -Winit-self -Wmissing-include-dirs \
-diff -Naur xf86-video-armsoc-dsd/src/armsoc_dumb.c xf86-video-armsoc-dsd.new/src/armsoc_dumb.c
---- xf86-video-armsoc-dsd/src/armsoc_dumb.c	2014-11-09 15:45:46.609119928 +0000
-+++ xf86-video-armsoc-dsd.new/src/armsoc_dumb.c	2014-11-09 15:46:52.349033720 +0000
-@@ -27,6 +27,7 @@
- #include <errno.h>
- #include <unistd.h>
- 
-+#include <xorg-server.h>
- #include <xf86.h>
- #include <xf86drm.h>
- #include <xf86drmMode.h>
  
