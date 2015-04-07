@@ -10,25 +10,27 @@
 
 pkgbase=mesa-noegl
 pkgname=('mesa-noegl' 'mesa-libgl-noegl' 'mesa-dri-noegl')
-pkgver=10.4.5
+pkgver=10.5.2
 pkgrel=1
 arch=('armv7h')
-makedepends=('python2' 'libxml2' 'libx11' 'glproto' 'libdrm' 'dri2proto' 'dri3proto' 'presentproto' 
+makedepends=('python2-mako' 'libxml2' 'libx11' 'glproto' 'libdrm' 'dri2proto' 'dri3proto' 'presentproto' 
              'libxshmfence' 'libxxf86vm'  'libxdamage' 'libvdpau' 'wayland' 'elfutils' 'llvm' 'systemd'
              'libomxil-bellagio' 'clang')
 url="http://mesa3d.sourceforge.net"
 license=('custom')
 options=('!libtool')
-source=(ftp://ftp.freedesktop.org/pub/mesa/${pkgver}/MesaLib-${pkgver}.tar.bz2{,.sig}
-        LICENSE)
-sha256sums=('bf60000700a9d58e3aca2bfeee7e781053b0d839e61a95b1883e05a2dee247a0'
+source=(ftp://ftp.freedesktop.org/pub/mesa/${pkgver}/mesa-${pkgver}.tar.xz{,.sig}
+        LICENSE
+        89387.patch)
+sha256sums=('2f4b6fb77c3e7d6f861558d0884a3073f575e1e673dad8d1b0624e78e9c4dd44'
             'SKIP'
-            '7fdc119cf53c8ca65396ea73f6d10af641ba41ea1dd2bd44a824726e01c8b3f2')
-
+            '7fdc119cf53c8ca65396ea73f6d10af641ba41ea1dd2bd44a824726e01c8b3f2'
+            'd41b812bdc8b762d5acdf6e79f186c8d5e18acdeff44ab0b0569ba9296af4b9a')
+validpgpkeys=('8703B6700E7EE06D7A39B8D6EDAE37B02CEB490D') # Emil Velikov <emil.l.velikov@gmail.com>
 build() {
   cd ${srcdir}/?esa-*
-
-  autoreconf -vfi # our automake is far too new for their build system :)
+  #patch -p1 < ../89387.patch
+  #autoreconf -vfi # our automake is far too new for their build system :)
 
   ./configure --prefix=/usr \
     --sysconfdir=/etc \
@@ -38,8 +40,6 @@ build() {
     --with-egl-platforms=x11,drm,wayland \
     --enable-llvm-shared-libs \
     --enable-egl \
-    --disable-gallium-egl \
-    --disable-gallium-gbm \
     --enable-gbm \
     --enable-gallium-llvm \
     --enable-shared-glapi \
