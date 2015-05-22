@@ -10,7 +10,7 @@
 
 pkgname=libvpx-neon
 _pkgname=libvpx
-pkgver=1.3.0
+pkgver=1.4.0
 pkgrel=1
 pkgdesc='The VP8 Codec SDK'
 arch=('i686' 'x86_64')
@@ -23,7 +23,7 @@ provides=("$_pkgname=${pkgver}")
 source=($_pkgname::git+http://code.google.com/p/webm.libvpx#tag=v$pkgver
         fix-armhf-link.patch)
 md5sums=('SKIP'
-         '88be7da1de42d56c2e0d08945b65ad2b')
+         'SKIP')
 
 build() {
     cd $_pkgname
@@ -36,7 +36,8 @@ build() {
         --enable-pic \
         --disable-install-docs \
         --disable-install-srcs \
-        --cpu=cortex-a15
+        --disable-neon --disable-neon-asm  ## todo get neon compiling again with 1.4.0
+
     make
 }
 
