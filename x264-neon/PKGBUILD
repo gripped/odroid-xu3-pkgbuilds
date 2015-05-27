@@ -12,7 +12,7 @@
 pkgname=('x264-neon' 'libx264-neon' 'libx264-10bit-neon')
 _pkgname=x264
 pkgver=144.20150223
-pkgrel=1
+pkgrel=1.1
 epoch=1
 arch=('i686' 'x86_64')
 url='http://www.videolan.org/developers/x264.html'
@@ -61,7 +61,7 @@ package_x264-neon() {
 package_libx264-neon() {
   pkgdesc='Library for encoding H264/AVC video streams'
   depends=('glibc')
-  provides=('x264-dev' 'libx264')
+  provides=('x264-dev' 'libx264' 'libx264.so')
   conflicts=('x264-dev' 'libx264')
   replaces=('x264-dev' 'libx264')
 
@@ -72,7 +72,7 @@ package_libx264-neon() {
 package_libx264-10bit-neon() {
   pkgdesc='Library for encoding H264/AVC video streams. 10bit-depth.'
   depends=('glibc')
-  provides=('libx264' 'x264-dev' 'libx264-10bit')
+  provides=('libx264' 'x264-dev' 'libx264-10bit' 'libx264.so')
   conflicts=('libx264' 'x264-dev' 'libx264-10bit')
 
   install -d "$pkgdir"/usr/lib

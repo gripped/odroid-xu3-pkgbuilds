@@ -6,12 +6,12 @@
 pkgname=x265-neon
 _pkgname=x265
 pkgver=1.6
-pkgrel=1
+pkgrel=1.1
 pkgdesc='Open Source H265/HEVC video encoder'
 arch=('i686' 'x86_64')
 license=('GPL')
 depends=('gcc-libs')
-provides=('x265')
+provides=('x265' 'libx265.so')
 conflicts=('x265')
 makedepends=('yasm' 'cmake')
 url='https://bitbucket.org/multicoreware/x265'

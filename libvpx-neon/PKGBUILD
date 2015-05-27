@@ -11,7 +11,7 @@
 pkgname=libvpx-neon
 _pkgname=libvpx
 pkgver=1.4.0
-pkgrel=1
+pkgrel=1.1
 pkgdesc='The VP8 Codec SDK'
 arch=('i686' 'x86_64')
 url='http://www.webmproject.org/'
@@ -19,7 +19,7 @@ license=('BSD')
 depends=('glibc')
 makedepends=('yasm' 'git')
 conflicts=('libvpx')
-provides=("$_pkgname=${pkgver}")
+provides=("$_pkgname=${pkgver}" 'libvpx.so')
 source=($_pkgname::git+http://code.google.com/p/webm.libvpx#tag=v$pkgver
         fix-armhf-link.patch)
 md5sums=('SKIP'
