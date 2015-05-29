@@ -1,0 +1,24 @@
+--- CMakeLists.txt	2015-04-29 13:44:35.000000000 +0000
++++ CMakeLists.txt.new	2015-05-29 16:19:40.238330672 +0000
+@@ -45,7 +45,7 @@
+ configure_file(${plexdir}/git_revision.h.in git_revision.h)
+ 
+ message(STATUS "Building Plex Home Theater, version: ${PLEX_VERSION_STRING}")
+-
++enable_language(ASM C)
+ include(CMakeFunctions)
+ 
+ # Now check for available functions
+--- xbmc/utils/CMakeLists.txt	2015-04-29 13:44:35.000000000 +0000
++++ xbmc/utils/CMakeLists.txt.new	2015-05-29 16:19:47.753344687 +0000
+@@ -1,7 +1,10 @@
++set(utils_SRCS ./fastmemcpy-arm.S)
+ find_all_sources(. utils_SRCS)
+ 
+ list(REMOVE_ITEM utils_SRCS ./WindowsShortcut.cpp)
+ list(REMOVE_ITEM utils_SRCS ./EdenVideoArtUpdater.cpp)
++list(APPEND utils_SRCS ${root}/xbmc/utils/fastmemcpy-arm.S)
++
+ if(TARGET_WIN32)
+   list(REMOVE_ITEM utils_SRCS ./CryptThreading.cpp)
+   list(REMOVE_ITEM utils_SRCS ./GLUtils.cpp)
