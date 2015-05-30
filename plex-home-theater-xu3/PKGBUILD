@@ -5,7 +5,7 @@
 pkgname=plex-home-theater-xu3
 _pkgver=1.4.0.459-b41b1814
 pkgver=${_pkgver%-*}
-pkgrel=1
+pkgrel=2
 pkgdesc='Plex Home Theater'
 arch=('i686' 'x86_64')
 url='http://www.plexapp.com/'
@@ -24,12 +24,14 @@ source=("https://github.com/plexinc/plex-home-theater-public/archive/v${_pkgver}
         'plex-ffmpeg-compat.patch'
         'plex-libcec-2.2.0.patch'
         'plexhometheater.sh'
-        'arm.patch')
+        'arm.patch'
+        'mfc.patch')
 sha256sums=('cc6485100afa0f7a4d483e05eeafba72764f55749bb3f3ee0a529646e076bbe4'
             '1ae6e5e744d7979b6ae5c516f2d145ac8ee06e0babb26a6e57e6143c1b16bfc3'
             'fb4bb1a5736d189e7a2137f39f6787bcae0e2c38073f9ddca96fb463fa50da2c'
             '491fbe63ab57a003a2d0cd39d6ed14636583cefb08f2a94b2a06b86318fb4dac'
-            'fc9c94831cc43ff597ed129bcd2fb714cfeda218be7f0f675fdc23d9b7521bb9')
+            'fc9c94831cc43ff597ed129bcd2fb714cfeda218be7f0f675fdc23d9b7521bb9'
+            '7599d8bbde9ae38c622b7ad7ffdd06eb22c460bff84b4104a01488fb52d8ff4b')
 
 prepare() {
   cd plex-home-theater-public-${_pkgver}
@@ -37,6 +39,7 @@ prepare() {
   patch -Np1 -i ../plex-libcec-2.2.0.patch
   patch -Np1 -i ../plex-ffmpeg-compat.patch
   patch -p0 < ../arm.patch
+  patch -p1 < ../mfc.patch
 }
 
 build() {
@@ -58,7 +61,7 @@ build() {
            -DUSE_INTERNAL_FFMPEG='FALSE' \
            -DCMAKE_BUILD_TYPE='Release'
 
-  make VERBOSE=1
+  make
 }
 
 package() {
