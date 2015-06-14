@@ -4,9 +4,9 @@
 buildarch=4
 
 pkgname=odroid-libgl-mali-T628-x11
-pkgver=r4p0.02rel0
-_pkgver=r4p0-02rel0
-pkgrel=8
+pkgver=r5p1
+_pkgver=r5p1
+pkgrel=1
 arch=('armv7h')
 pkgdesc="ODROID Mali GL Driver"
 url="http://malideveloper.arm.com/"
@@ -15,19 +15,19 @@ install=odroid-libgl-mali-T628-x11.install
 provides=('libegl' 'libgles' 'libMali' 'odroid-libgl')
 conflicts=('odroid-libgl' 'odroid-libgl-mali-T628-fbdev')
 depends=('mesa-noegl' 'mesa-libgl-noegl')
-source=("http://malideveloper.arm.com/downloads/drivers/binary/${_pkgver}/mali-t62x_${_pkgver}_linux_1+x11.tar.gz"
+source=('http://odroidxu.leeharris.me.uk/libmali-x11-r5p1.tar.gz'
 	'pkgconfigs.tar.xz'
 	'50-mali.rules'
 	'xorg.conf.example')
-md5sums=('27c00dd067d8d8a185a17c657aab16f0'
-	 '4bb3aacb426b83c4134ebc627c210876'
+md5sums=('74a24ab86b537d346bfadbd0922613d9'
+	 'cd0f0bd2fe709e880ab3763ed49bab8c'
 	 '058d139371185145bcc7dfd5b33413d6'
 	 'bbf535435eec03caa207a2d955077ed4')
 
 package() {
     install -d -m 0755 ${pkgdir}/usr/lib
 	install -d -m 0755 ${pkgdir}/usr/share/mali
-    cd ${srcdir}/x11
+    cd ${srcdir}
     install -m 0755 libmali.so ${pkgdir}/usr/lib
 
     cd ${srcdir}
