@@ -16,8 +16,8 @@ pkgbase=kodi-xu3
 pkgname=('kodi-xu3' 'kodi-eventclients-xu3')
 pkgver=14.2
 _codename=Helix
-_commit=0ad7ed381201d40a398d202ee57aafa9d430407a
-pkgrel=2
+_commit=608b64c444693d729a3c77b9d5efbf2dd1553da8
+pkgrel=3
 arch=('i686' 'x86_64')
 url="http://kodi.tv"
 license=('GPL2')
@@ -34,16 +34,19 @@ source=(
   "$pkgname-$pkgver-$_codename.tar.gz::https://github.com/Owersun/xbmc/archive/$_commit.tar.gz"
   'march.diff'
   '51-cec.rules'
+  'mali.patch'
 )
 sha256sums=(
-  '485530d7b1891a09b9eaebaa2ed8585d321b3152efa285e209d37fe2a2690591'
+  'd55f8e64a6d58d7d33c899fed54b4cceab41e6a86dbef48a6b0e71fb0b9002ad'
   'caff0bc804525a9be02c3d5ae0d93424faa99b56aa597f6c2beb0273a6df3bb7'
   '42d5adfb911e889134f8b81b509fc15a145e4b3e78be9505a46c47a36100e96f'
+  '634f4d896ec047f01ee0efd086bc6041c2be9e76629af32aaa73de818049be60'
 )
 
 prepare() {
   cd "$srcdir/xbmc-$_commit"
   patch -p0 < ../march.diff
+  patch -p1 < ../mali.patch
   find -type f -name *.py -exec sed 's|^#!.*python$|#!/usr/bin/python2|' -i "{}" +
   sed 's|^#!.*python$|#!/usr/bin/python2|' -i tools/depends/native/rpl-native/rpl
 	sed 's/python/python2/' -i tools/Linux/kodi.sh.in
