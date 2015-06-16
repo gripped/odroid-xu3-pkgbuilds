@@ -1,5 +1,6 @@
 # $Id: PKGBUILD 179039 2013-03-01 20:22:01Z andrea $
-# Maintainer: Andrea Scarpino <andrea@archlinux.org>
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Andrea Scarpino <andrea@archlinux.org>
 
 # ALARM: Kevin Mihelich <kevin@archlinuxarm.org>
 #  - removed libfbclient, ibase
@@ -38,8 +39,8 @@ pkgname=('qt5-base-neon'
          'qt5-websockets-neon'
          'qt5-x11extras-neon'
          'qt5-xmlpatterns-neon')
-pkgver=5.4.0
-pkgrel=3
+pkgver=5.4.2
+pkgrel=1
 arch=('i686' 'x86_64')
 url='http://qt-project.org/'
 license=('GPL3' 'LGPL' 'FDL' 'custom')
@@ -49,28 +50,38 @@ makedepends=('libxcb' 'xcb-proto' 'xcb-util' 'xcb-util-image' 'xcb-util-wm' 'xcb
             'postgresql-libs' 'libmariadbclient' 'sqlite' 'unixodbc' 'libfbclient' 'libmng'
             'python2' 'ruby' 'gperf' 'libxslt' 'libxcomposite' 'fontconfig' 'bluez-libs'
             'openal' 'gtk2' 'libxkbcommon-x11' 'mtdev' 'harfbuzz' 'libwebp' 'leveldb'
-            'geoclue' 'pciutils' 'nss' 'gstreamer0.10-bad')
+            'geoclue' 'pciutils' 'nss' 'gstreamer0.10-bad' 'gcc-neon')
 groups=('qt' 'qt5')
 _pkgfqn="qt-everywhere-opensource-src-${pkgver}"
 source=("http://download.qt-project.org/official_releases/qt/${pkgver%.*}/${pkgver}/single/${_pkgfqn}.tar.xz"
         'assistant.desktop' 'designer.desktop' 'linguist.desktop' 'qdbusviewer.desktop'
-        'kdebug-329174.patch'
+        'keypad-shortcuts.patch' 'avoid-calling-potentially-pure-virtual-method.patch'
+        'ibus-get-display-number-when-screen-number-is-omitted.patch'
         'rpi.patch'
-        'qt5webkit-0002-Fix-QtWebKit-build-on-ARM-softfp.patch'
-        'neon.patch')
-md5sums=('21843b00ecde8956217faab391bc007b'
+        'qt5webkit-0002-Fix-QtWebKit-build-on-ARM-softfp.patch')
+md5sums=('c23bd0f14d66e7901d24906a1edce9b0'
          'b2897dd6a2967bccf8f10e397aafee55'
-         '9638a78e502719ef8fe5f8d10d0361a9'
+         '76e150b20178d2d43801f7367232e5f7'
          '188da8f4c87316e730ebf1c6217bf5a0'
          '322b419b16c75d4de0ee7ad0a246caa1'
-         'f69ac1589a661f232fb86ad32e293b28'
+         '665439088fc7de52a97455c5eaf87889'
+         'cab3284d52ea700b8761f4d71d68baf0'
+         '39e285d08b4951de095c2f6d6acdc925'
          '9fe115d2c1d4778b8cb8e7f1b2e2bca6'
-         'd55ad1f1c90725834b44eada5db4e401'
-         '0904306355f27133af933e1cc9201246')
+         'd55ad1f1c90725834b44eada5db4e401')
 
 prepare() {
   cd ${_pkgfqn}
-  patch  -p0 < ../neon.patch
+
+  # https://bugs.archlinux.org/task/44676
+  (cd qtbase; patch -p1 -i "$srcdir/keypad-shortcuts.patch")
+
+  # https://bugs.archlinux.org/task/43986
+  (cd qtdeclarative; patch -p1 -i "$srcdir/avoid-calling-potentially-pure-virtual-method.patch")
+
+  # https://bugs.archlinux.org/task/45180
+  (cd qtbase; patch -p1 -i "$srcdir/ibus-get-display-number-when-screen-number-is-omitted.patch")
+
   MAKEFLAGS="-j3"
 
   # Fix building on armv5
@@ -112,11 +123,6 @@ prepare() {
   # in qtwebengine there are still a lot of relative calls which need a workaround
   mkdir "${srcdir}"/python2-path
   ln -s /usr/bin/python2 "${srcdir}"/python2-path/python
-
-  # Fixed in 5.4.1
-  cd qtbase
-  patch -p1 -i "${srcdir}"/kdebug-329174.patch
-
 }
 
 build() {
@@ -128,10 +134,8 @@ build() {
 
   # python2 workaround
   export PATH="${srcdir}/python2-path:$PATH"
-  export CFG_CPUFEATURES=neon
 
-
-    PYTHON=/usr/bin/python2 ./configure -confirm-license -opensource \
+  PYTHON=/usr/bin/python2 ./configure -confirm-license -opensource \
     -prefix /usr \
     -bindir /usr/lib/qt/bin \
     -docdir /usr/share/doc/qt \
@@ -150,6 +154,7 @@ build() {
     -dbus-linked \
     -system-harfbuzz \
     -journald \
+    -no-use-gold-linker \
     -no-sse2 \
     -no-sse3 \
     -no-ssse3 \
@@ -158,24 +163,23 @@ build() {
     -no-avx \
     -no-avx2 \
     -opengl es2 \
-    -skip webengine 
-
+    -skip webengine
 
   make
 
   # Fix docs build when qt is not installed
-#   sed -i "s|/usr/lib/qt/bin/qdoc|${QTDIR}/qtbase/bin/qdoc|g" \
-#     "${QTDIR}"/qtbase/qmake/Makefile.qmake-docs
-#   find "${QTDIR}" -name Makefile \
-#     -exec sed -i "s|/usr/lib/qt/bin/qdoc|${QTDIR}/qtbase/bin/qdoc|g" {} +
-#   sed -i "s|/usr/lib/qt/bin/qhelpgenerator|${QTDIR}/qttools/bin/qhelpgenerator|g" \
-#     "${QTDIR}"/qtbase/qmake/Makefile.qmake-docs
-#   find "${QTDIR}" -name Makefile \
-#     -exec sed -i "s|/usr/lib/qt/bin/qhelpgenerator|${QTDIR}/qttools/bin/qhelpgenerator|g" {} +
-#   sed -i "s|/usr/lib/qt/bin/qhelpgenerator|${QTDIR}/qttools/bin/qhelpgenerator|g" \
-#     qtwebkit/Source/Makefile.api
-#   find "${QTDIR}" -name Makefile \
-#     -exec sed -i "s|/usr/lib/qt/bin/qmlplugindump|${QTDIR}/qtdeclarative/bin/qmlplugindump|g" {} +
+  sed -i "s|/usr/lib/qt/bin/qdoc|${QTDIR}/qtbase/bin/qdoc|g" \
+    "${QTDIR}"/qtbase/qmake/Makefile.qmake-docs
+  find "${QTDIR}" -name Makefile \
+    -exec sed -i "s|/usr/lib/qt/bin/qdoc|${QTDIR}/qtbase/bin/qdoc|g" {} +
+  sed -i "s|/usr/lib/qt/bin/qhelpgenerator|${QTDIR}/qttools/bin/qhelpgenerator|g" \
+    "${QTDIR}"/qtbase/qmake/Makefile.qmake-docs
+  find "${QTDIR}" -name Makefile \
+    -exec sed -i "s|/usr/lib/qt/bin/qhelpgenerator|${QTDIR}/qttools/bin/qhelpgenerator|g" {} +
+  sed -i "s|/usr/lib/qt/bin/qhelpgenerator|${QTDIR}/qttools/bin/qhelpgenerator|g" \
+    qtwebkit/Source/Makefile.api
+  find "${QTDIR}" -name Makefile \
+    -exec sed -i "s|/usr/lib/qt/bin/qmlplugindump|${QTDIR}/qtdeclarative/bin/qmlplugindump|g" {} +
 
   make docs
 }
@@ -185,7 +189,8 @@ package_qt5-base-neon() {
   depends=('libjpeg-turbo' 'xcb-util-keysyms' 'dbus' 'fontconfig' 'systemd'
            'xcb-util-wm' 'libxrender' 'libxi' 'sqlite' 'xcb-util-image' 'icu'
            'qtchooser' 'libgl')
-  optdepends=('postgresql-libs: PostgreSQL driver'
+  optdepends=('qt5-svg: to use SVG icon themes'
+              'postgresql-libs: PostgreSQL driver'
               'libmariadbclient: MariaDB driver'
               'unixodbc: ODBC driver'
               'mtdev: evdev plugin'
@@ -516,7 +521,7 @@ package_qt5-tools-neon() {
   install -D -m644 src/assistant/assistant/images/assistant-128.png \
     "${pkgdir}/usr/share/icons/hicolor/128x128/apps/assistant.png"
   install -D -m644 src/designer/src/designer/images/designer.png \
-    "${pkgdir}/usr/share/icons/hicolor/128x128/apps/designer.png"
+    "${pkgdir}/usr/share/icons/hicolor/128x128/apps/QtProject-designer.png"
   install -D -m644 src/qdbus/qdbusviewer/images/qdbusviewer.png \
     "${pkgdir}/usr/share/icons/hicolor/32x32/apps/qdbusviewer.png"
   install -D -m644 src/qdbus/qdbusviewer/images/qdbusviewer-128.png \
