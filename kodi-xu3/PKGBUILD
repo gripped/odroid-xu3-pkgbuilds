@@ -16,8 +16,8 @@ pkgbase=kodi-xu3
 pkgname=('kodi-xu3' 'kodi-eventclients-xu3')
 pkgver=14.2
 _codename=Helix
-_commit=608b64c444693d729a3c77b9d5efbf2dd1553da8
-pkgrel=3
+_commit=b391600d938e9574f7083934efe605400f20d5c8
+pkgrel=4
 arch=('i686' 'x86_64')
 url="http://kodi.tv"
 license=('GPL2')
@@ -36,12 +36,10 @@ source=(
   '51-cec.rules'
   'mali.patch'
 )
-sha256sums=(
-  'd55f8e64a6d58d7d33c899fed54b4cceab41e6a86dbef48a6b0e71fb0b9002ad'
-  'caff0bc804525a9be02c3d5ae0d93424faa99b56aa597f6c2beb0273a6df3bb7'
-  '42d5adfb911e889134f8b81b509fc15a145e4b3e78be9505a46c47a36100e96f'
-  '634f4d896ec047f01ee0efd086bc6041c2be9e76629af32aaa73de818049be60'
-)
+sha256sums=('e72d74e0bd7ef5c2f3fca26986effddce73b15ca2386a44a24a23ee76691bd60'
+            'caff0bc804525a9be02c3d5ae0d93424faa99b56aa597f6c2beb0273a6df3bb7'
+            '42d5adfb911e889134f8b81b509fc15a145e4b3e78be9505a46c47a36100e96f'
+            '634f4d896ec047f01ee0efd086bc6041c2be9e76629af32aaa73de818049be60')
 
 prepare() {
   cd "$srcdir/xbmc-$_commit"
