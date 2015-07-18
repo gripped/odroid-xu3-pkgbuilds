@@ -11,7 +11,7 @@ noautobuild=1
 
 pkgname=binutils-neon
 pkgver=2.25
-pkgrel=5
+pkgrel=5.1
 _commit=69352378
 pkgdesc="A set of programs to assemble and manipulate binary and object files"
 arch=('i686' 'x86_64')
@@ -20,7 +20,7 @@ license=('GPL')
 groups=('base-devel')
 depends=('glibc-neon>=2.20' 'zlib')
 makedepends=('git')
-checkdepends=('dejagnu')
+checkdepends=('dejagnu' 'bc')
 options=('staticlibs' '!distcc' '!ccache')
 conflicts=('binutils')
 provides=("binutils=${pkgver}")
@@ -58,7 +58,7 @@ build() {
     --with-bugurl=https://github.com/archlinuxarm/PKGBUILDs/issues \
     --enable-threads --enable-shared --with-pic \
     --enable-ld=default --enable-gold --enable-plugins \
-    --disable-werror --disable-gdb $CONFIGFLAG
+    --disable-werror --disable-gdb --disable-sim $CONFIGFLAG
 
   # check the host environment and makes sure all the necessary tools are available
   make configure-host
