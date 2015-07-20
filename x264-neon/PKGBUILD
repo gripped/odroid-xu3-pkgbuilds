@@ -11,15 +11,15 @@
 
 pkgname=('x264-neon' 'libx264-neon' 'libx264-10bit-neon')
 _pkgname=x264
-pkgver=144.20150223
-pkgrel=1.1
+pkgver=148.20150717
+pkgrel=1
 epoch=1
 arch=('i686' 'x86_64')
 url='http://www.videolan.org/developers/x264.html'
 license=('GPL')
 depends=('glibc')
-makedepends=('yasm' 'git' 'ffmpeg')
-source=(git://git.videolan.org/x264.git#commit=c8a773ebf)
+makedepends=('yasm' 'git' 'ffmpeg' 'l-smash')
+source=(x264::git://git.videolan.org/x264/x264-sandbox.git#commit=e6d2a36bb)
 md5sums=('SKIP')
 
 pkgver() {
@@ -49,7 +49,7 @@ build() {
 
 package_x264-neon() {
   pkgdesc='CLI tools for encoding H264/AVC video streams'
-  depends=('glibc' 'ffmpeg')
+  depends=('ffmpeg' 'liblsmash.so')
   provides=('x264-10bit' 'x264')
   conflicts=('x264-10bit' 'x264')
   replaces=('x264-10bit' 'x264')
