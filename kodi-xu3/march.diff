@@ -1,5 +1,5 @@
---- configure.in.orig	2015-01-19 19:11:42.440555191 +0000
-+++ configure.in	2015-01-19 19:12:43.985590294 +0000
+--- configure.ac.orig	2015-01-19 19:11:42.440555191 +0000
++++ configure.ac	2015-01-19 19:12:43.985590294 +0000
 @@ -1774,7 +1774,7 @@
      elif test "$with_ffmpeg" = "force"; then
        # always build our ffmpeg

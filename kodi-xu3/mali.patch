@@ -19,15 +19,13 @@ index 4cbdbbe..e176ee7 100644
    m_videoBuffer.data[0]         = NULL;
    m_videoBuffer.data[1]         = NULL;
    m_videoBuffer.data[2]         = NULL;
-diff --git a/xbmc/windowing/X11/WinSystemX11.cpp b/xbmc/windowing/X11/WinSystemX11.cpp
-index 717834e..b08f272 100644
---- a/xbmc/windowing/X11/WinSystemX11.cpp
-+++ b/xbmc/windowing/X11/WinSystemX11.cpp
-@@ -507,6 +507,7 @@ bool CWinSystemX11::IsCurrentOutput(CStdString output)
- EGLConfig getEGLConfig(EGLDisplay eglDisplay, XVisualInfo *vInfo)
- {
-   EGLint attributes[] = {
-+	EGL_CONFIG_ID, 1,
+--- a/xbmc/windowing/X11/WinSystemX11.cpp	2015-07-19 20:42:23.000000000 +0000
++++ b/xbmc/windowing/X11/WinSystemX11.cpp.new	2015-07-21 19:41:21.447550815 +0000
+@@ -497,6 +497,7 @@
+   EGLint attributes[] =
+   {
+     EGL_DEPTH_SIZE, 24,
++    EGL_CONFIG_ID, 1,
      EGL_NONE
    };
    EGLint numConfigs;

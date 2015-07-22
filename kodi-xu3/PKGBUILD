@@ -14,17 +14,17 @@ _prefix=/usr
 
 pkgbase=kodi-xu3
 pkgname=('kodi-xu3' 'kodi-eventclients-xu3')
-pkgver=14.2
-_codename=Helix
-_commit=b391600d938e9574f7083934efe605400f20d5c8
-pkgrel=4
+pkgver=15.0.2
+_codename=Isengard
+_commit=aa4e4f946f949d3b0f16247ae2349271cf98286e
+pkgrel=1
 arch=('i686' 'x86_64')
 url="http://kodi.tv"
 license=('GPL2')
 makedepends=(
   'afpfs-ng' 'bluez-libs' 'boost' 'cmake' 'curl' 'cwiid' 'doxygen' 'git' 'glew'
   'gperf' 'hicolor-icon-theme' 'jasper' 'java-runtime' 'libaacs' 'libass'
-  'libbluray' 'libcdio' 'libcec' 'libgl' 'libmariadbclient' 'libmicrohttpd'
+  'libbluray' 'libcdio' 'libcec-git' 'libgl' 'libmariadbclient' 'libmicrohttpd'
   'libmodplug' 'libmpeg2' 'libnfs' 'libplist' 'libpulse-neon' 'libssh' 'libva'
   'libvdpau' 'libxrandr' 'libxslt' 'lzo' 'nasm' 'nss-mdns' 'python2-pillow'
   'python2-pybluez' 'python2-simplejson' 'rtmpdump' 'sdl2' 'sdl_image'
@@ -36,10 +36,10 @@ source=(
   '51-cec.rules'
   'mali.patch'
 )
-sha256sums=('e72d74e0bd7ef5c2f3fca26986effddce73b15ca2386a44a24a23ee76691bd60'
-            'caff0bc804525a9be02c3d5ae0d93424faa99b56aa597f6c2beb0273a6df3bb7'
+sha256sums=('d41222e435c553d9095d56bb4df1dd3a32daf886e111f48781a20c6d46d8081e'
+            '3f5eb4e0fc8142c865e93ad88468b16e9c750f9994795ac06f1b9e9e3f570d0c'
             '42d5adfb911e889134f8b81b509fc15a145e4b3e78be9505a46c47a36100e96f'
-            '634f4d896ec047f01ee0efd086bc6041c2be9e76629af32aaa73de818049be60')
+            '16c28ed97c0b2710a07a4bf7e4d5d23a1efcfd9fddc2334ce53a0f0003e1f31c')
 
 prepare() {
   cd "$srcdir/xbmc-$_commit"
@@ -47,7 +47,10 @@ prepare() {
   patch -p1 < ../mali.patch
   find -type f -name *.py -exec sed 's|^#!.*python$|#!/usr/bin/python2|' -i "{}" +
   sed 's|^#!.*python$|#!/usr/bin/python2|' -i tools/depends/native/rpl-native/rpl
-	sed 's/python/python2/' -i tools/Linux/kodi.sh.in
+  sed 's/python/python2/' -i tools/Linux/kodi.sh.in
+  sed 's/shell python/shell python2/' -i tools/EventClients/Makefile.in
+  # texturepacker cannot build statically
+  sed '/--enable-static/d' -i tools/depends/native/TexturePacker/Makefile
 }
 
 build() {
@@ -137,8 +140,5 @@ package_kodi-eventclients-xu3() {
 
   make DESTDIR="$pkgdir" eventclients WII_EXTRA_OPTS=-DCWIID_OLD
 
-  install -dm755 "$pkgdir/usr/share/$pkgbase/eventclients"
-  mv "$pkgdir/kodi"/* "$pkgdir/usr/share/$pkgbase/eventclients"
-  rmdir "$pkgdir/kodi"
 }
 
