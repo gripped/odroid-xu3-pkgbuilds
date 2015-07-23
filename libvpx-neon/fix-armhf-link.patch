@@ -29,15 +29,6 @@ index 25c9f80..1675044 100644
        *x86_64*|*amd64*)
          tgt_isa=x86_64
          ;;
-@@ -811,7 +819,7 @@ process_common_toolchain() {
-           soft_enable neon
-           ;;
-         armv7|armv7s)
--          soft_enable neon
-+          #soft_enable neon
-           # Only enable neon_asm when neon is also enabled.
-           enabled neon && soft_enable neon_asm
-           # If someone tries to force it through, die.
 @@ -825,13 +833,16 @@ process_common_toolchain() {
            soft_enable media
            soft_enable fast_unaligned

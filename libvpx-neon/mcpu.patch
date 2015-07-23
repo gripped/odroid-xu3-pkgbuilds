@@ -1,0 +1,18 @@
+--- build/make/configure.sh	2015-07-23 11:24:48.393681020 +0000
++++ build/make/configure.sh.new	2015-07-23 11:26:07.943726684 +0000
+@@ -850,13 +850,8 @@
+           check_add_asflags --defsym ARCHITECTURE=${arch_int}
+           tune_cflags="-mtune="
+           if [ ${tgt_isa} = "armv7" ] || [ ${tgt_isa} = "armv7s" ]; then
+-            check_add_cflags  -march=armv7-a -mfloat-abi=${float_abi}
+-            check_add_asflags -march=armv7-a -mfloat-abi=${float_abi}
+-
+-            if enabled neon || enabled neon_asm; then
+-              check_add_cflags -mfpu=neon #-ftree-vectorize
+-              check_add_asflags -mfpu=neon
+-            fi
++            check_add_cflags  -mcpu=cortex-a15.cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4 
++            check_add_asflags -mcpu=cortex-a15 -mfloat-abi=hard -mfpu=neon-vfpv4 
+           else
+             check_add_cflags -march=${tgt_isa} -mfloat-abi=${float_abi}
+             check_add_asflags -march=${tgt_isa} -mfloat-abi=${float_abi}
