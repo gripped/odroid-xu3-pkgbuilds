@@ -3,8 +3,8 @@
 
 pkgname=chromium-pepperflash
 pkgdesc="Google Chrome's Pepper Flash plugin for Chromium on armv7h"
-pkgver=17.0.0.134.r1
-_pkgver=17.0.0.134-r1
+pkgver=18.0.0.160.r1
+_pkgver=18.0.0.160-r1
 pkgrel=1
 arch=('armv7h')
 url="http://www.google.com/chrome"
@@ -17,7 +17,7 @@ install=chromium-pepperflash.install
 source=('license.html::http://www.google.com/chrome/intl/en/eula_text.html'
          "http://odroidxu.leeharris.me.uk/PepperFlash-${_pkgver}.tar.gz")
 md5sums=('SKIP'
-         '2d3852f128c0adcfcb72f7628ecbc44c')
+         'a98d60881d7b538ee27d746b189b2d48')
 
 package() {
 	install -d "${pkgdir}/usr/lib/PepperFlash"
