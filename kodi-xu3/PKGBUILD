@@ -14,9 +14,9 @@ _prefix=/usr
 
 pkgbase=kodi-xu3
 pkgname=('kodi-xu3' 'kodi-eventclients-xu3')
-pkgver=15.0.2
+pkgver=15.1rc1
 _codename=Isengard
-_commit=aa4e4f946f949d3b0f16247ae2349271cf98286e
+_commit=1a5bafa93553e3e99c23393a714ee65817df4ac3
 pkgrel=1
 arch=('i686' 'x86_64')
 url="http://kodi.tv"
@@ -36,7 +36,7 @@ source=(
   '51-cec.rules'
   'mali.patch'
 )
-sha256sums=('d41222e435c553d9095d56bb4df1dd3a32daf886e111f48781a20c6d46d8081e'
+sha256sums=('09721a8f5efc2b6fe8b869d742b167b1abc80a47387314cb2dce7b003d5d3d27'
             '3f5eb4e0fc8142c865e93ad88468b16e9c750f9994795ac06f1b9e9e3f570d0c'
             '42d5adfb911e889134f8b81b509fc15a145e4b3e78be9505a46c47a36100e96f'
             '16c28ed97c0b2710a07a4bf7e4d5d23a1efcfd9fddc2334ce53a0f0003e1f31c')
