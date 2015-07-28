@@ -16,15 +16,15 @@ pkgbase=kodi-xu3
 pkgname=('kodi-xu3' 'kodi-eventclients-xu3')
 pkgver=15.1rc1
 _codename=Isengard
-_commit=1a5bafa93553e3e99c23393a714ee65817df4ac3
-pkgrel=1
+_commit=7fbe8514599df493c6670e0bbf67a30d11e72a74
+pkgrel=2
 arch=('i686' 'x86_64')
 url="http://kodi.tv"
 license=('GPL2')
 makedepends=(
   'afpfs-ng' 'bluez-libs' 'boost' 'cmake' 'curl' 'cwiid' 'doxygen' 'git' 'glew'
   'gperf' 'hicolor-icon-theme' 'jasper' 'java-runtime' 'libaacs' 'libass'
-  'libbluray' 'libcdio' 'libcec-git' 'libgl' 'libmariadbclient' 'libmicrohttpd'
+  'libbluray' 'libcdio' 'libcec' 'libgl' 'libmariadbclient' 'libmicrohttpd'
   'libmodplug' 'libmpeg2' 'libnfs' 'libplist' 'libpulse-neon' 'libssh' 'libva'
   'libvdpau' 'libxrandr' 'libxslt' 'lzo' 'nasm' 'nss-mdns' 'python2-pillow'
   'python2-pybluez' 'python2-simplejson' 'rtmpdump' 'sdl2' 'sdl_image'
@@ -36,7 +36,7 @@ source=(
   '51-cec.rules'
   'mali.patch'
 )
-sha256sums=('09721a8f5efc2b6fe8b869d742b167b1abc80a47387314cb2dce7b003d5d3d27'
+sha256sums=('72c2bf6391e53d8d8f58861b31c389a1097f2b5ff70b340a7de6ca3dbc0c4317'
             '3f5eb4e0fc8142c865e93ad88468b16e9c750f9994795ac06f1b9e9e3f570d0c'
             '42d5adfb911e889134f8b81b509fc15a145e4b3e78be9505a46c47a36100e96f'
             '16c28ed97c0b2710a07a4bf7e4d5d23a1efcfd9fddc2334ce53a0f0003e1f31c')
