@@ -8,7 +8,7 @@
 pkgname=ffmpeg-neon
 _pkgname=ffmpeg
 pkgver=2.7.2
-pkgrel=1
+pkgrel=2
 epoch=1
 pkgdesc='Complete and free Internet live audio and video broadcasting solution'
 arch=('i686' 'x86_64')
@@ -16,9 +16,9 @@ url='http://ffmpeg.org/'
 license=('GPL')
 depends=(
       'alsa-lib' 'bzip2' 'fontconfig' 'gnutls' 'gsm' 'lame' 'libass' 'libvdpau' 'libwebp'
-      'libbluray' 'libmodplug' 'libpulse-neon' 'libtheora' 'libva' 'libvorbis' 'libvpx-neon' 'libwebp'
-      'opencore-amr' 'openjpeg' 'opus' 'rtmpdump' 'schroedinger' 'sdl' 'speex'
-      'v4l-utils' 'libx264-neon' 'xvidcore' 'zlib' 'x265-neon' 'fribidi' 'libssh'
+      'libbluray' 'libmodplug' 'libpulse-neon' 'libssh' 'libsoxr' 'libtheora' 'libva' 'libvorbis'
+      'libvpx-neon' 'libwebp' 'opencore-amr' 'openjpeg' 'opus' 'rtmpdump' 'schroedinger'
+       'sdl' 'speex' 'v4l-utils' 'libx264-neon' 'xvidcore' 'zlib' 'x265-neon' 'fribidi' 
       )
 makedepends=('yasm' 'hardening-wrapper')
 conflicts=('ffmpeg')
@@ -68,6 +68,7 @@ build() {
     --enable-libopus \
     --enable-libpulse \
     --enable-libschroedinger \
+    --enable-libsoxr \
     --enable-libspeex \
     --enable-libssh \
     --enable-libtheora \
