@@ -1,0 +1,46 @@
+# Maintainer: dhead666 <myfoolishgames@gmail.com>
+# https://github.com/dhead666/archlinux-pkgbuilds
+#
+# package version generated with # git log -1 --date=short --format="%cd.%h" | tr -d '-'
+
+pkgname=kodi-pvr-hts
+_gitname=pvr.hts
+pkgver=r306.9b05d4c
+pkgrel=1
+pkgdesc='Tvheadend HTSP PVR client addon for Kodi'
+arch=('i686' 'x86_64')
+url="https://github.com/kodi-pvr/$_gitname"
+license=('GPL')
+groups=('kodi-devel')
+makedepends=('cmake' 'kodi-platform')
+conflicts=('kodi-addon-pvr-hts-devel' 'kodi-devel-pvr-hts')
+source=("git+https://github.com/kodi-pvr/$_gitname#branch=Isengard")
+md5sums=('SKIP')
+
+_prefix='/usr'
+
+pkgver() {
+  cd "$srcdir/$_gitname"
+  ( set -o pipefail
+    git describe --long 2>/dev/null | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+  )
+}
+
+build() {
+  msg "Starting make..."
+  
+  cd "$srcdir/$_gitname"
+  mkdir -p build && pushd build
+  cmake \
+    -DCMAKE_INSTALL_PREFIX=$_prefix \
+    -DCMAKE_BUILD_TYPE=Release \
+    ..
+  make
+  popd
+}
+
+package() {
+  cd "$srcdir/$_gitname/build"
+  make DESTDIR="$pkgdir" install
+}
