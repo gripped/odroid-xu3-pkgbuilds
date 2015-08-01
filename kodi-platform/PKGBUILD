@@ -1,0 +1,43 @@
+# Maintainer: gripped <forum.odroid.com>
+
+
+pkgname=kodi-platform
+pkgver=r36.33b6390
+pkgrel=1
+pkgdesc='Kodi platform environment for compiling cmake binary addons'
+arch=('i686' 'x86_64')
+url="https://github.com/xbmc/$pkgname"
+license=('GPL')
+makedepends=('cmake' 'libplatform')
+depends=('tinyxml')
+conflicts=('kodi-devel-platform' 'kodi-platform-devel')
+source=("git+https://github.com/xbmc/$pkgname")
+md5sums=('SKIP')
+
+_prefix='/usr'
+
+pkgver() {
+  cd "$srcdir/$pkgname"
+  ( set -o pipefail
+    git describe --long 2>/dev/null | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+  )
+}
+
+build() {
+  cd "$srcdir/$pkgname"
+  mkdir -p build && pushd build
+  cmake \
+    -DCMAKE_INSTALL_PREFIX=$_prefix \
+    -DCMAKE_INSTALL_LIBDIR="$_prefix/lib" \
+    -DCMAKE_INSTALL_LIBDIR_NOARCH="$_prefix/lib" \
+    -DCMAKE_BUILD_TYPE=Release \
+    ..
+  make
+  popd
+}
+
+package() {
+  cd "$srcdir/$pkgname/build"
+  make DESTDIR="$pkgdir" install
+} 
