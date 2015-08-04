@@ -1,25 +1,24 @@
-# $Id: PKGBUILD 179039 2013-03-01 20:22:01Z andrea $
+# $Id$
 # Maintainer: Felix Yan <felixonmars@archlinux.org>
 # Contributor: Andrea Scarpino <andrea@archlinux.org>
 
 # ALARM: Kevin Mihelich <kevin@archlinuxarm.org>
-#  - removed libfbclient, ibase
+#  - removed libfbclient makedepend, ibase sql plugin
 #  - no x86/neon optimizations
 #  - restricted makeflags to -j3
 #  - enabled opengl es2, mesa makedepend for headers
 #  - added Raspberry Pi patches for armv6h
 #  - icu makedepend so qtwebkit can build
 #  - drop webengine package and skip in configure
+#  - patch for AArch64 support in qtwebkit
 
-# Arno Rehn <arno@arnorehn.de>
-#  - fix Raspberry Pi EGL/GLESv2 build
-# Modifier: gripped - forum.odroid.com - Enable neon. For Odroid XU3
 
 pkgbase=qt5-neon
 pkgname=('qt5-base-neon'
+         'qt5-canvas3d-neon'
          'qt5-connectivity-neon'
          'qt5-declarative-neon'
-         'qt5-doc-neon'
+#          'qt5-doc-neon'
          'qt5-enginio-neon'
          'qt5-graphicaleffects-neon'
          'qt5-imageformats-neon'
@@ -39,36 +38,35 @@ pkgname=('qt5-base-neon'
          'qt5-websockets-neon'
          'qt5-x11extras-neon'
          'qt5-xmlpatterns-neon')
-pkgver=5.4.2
-pkgrel=1
+pkgver=5.5.0
+pkgrel=1.1
 arch=('i686' 'x86_64')
-url='http://qt-project.org/'
+url='http://www.qt.io/developers'
 license=('GPL3' 'LGPL' 'FDL' 'custom')
 makedepends=('libxcb' 'xcb-proto' 'xcb-util' 'xcb-util-image' 'xcb-util-wm' 'xcb-util-keysyms'
-            'mesa' 'at-spi2-core' 'alsa-lib' 'gst-plugins-base-libs' 'gstreamer0.10-base-plugins'
-            'libjpeg-turbo' 'cups' 'libpulse' 'hicolor-icon-theme' 'desktop-file-utils'
-            'postgresql-libs' 'libmariadbclient' 'sqlite' 'unixodbc' 'libfbclient' 'libmng'
-            'python2' 'ruby' 'gperf' 'libxslt' 'libxcomposite' 'fontconfig' 'bluez-libs'
-            'openal' 'gtk2' 'libxkbcommon-x11' 'mtdev' 'harfbuzz' 'libwebp' 'leveldb'
-            'geoclue' 'pciutils' 'nss' 'gstreamer0.10-bad' 'gcc-neon')
+            'mesa-noegl' 'at-spi2-core' 'alsa-lib' 'gst-plugins-base-libs' 'libjpeg-turbo-neon' 'cups'
+            'libpulse' 'hicolor-icon-theme' 'desktop-file-utils' 'postgresql-libs' 'nss'
+            'libmariadbclient' 'sqlite' 'unixodbc' 'libmng' 'python2' 'ruby'
+            'gperf' 'libxslt' 'libxcomposite' 'fontconfig' 'bluez-libs' 'openal' 'gtk2'
+            'libxkbcommon-x11' 'mtdev' 'harfbuzz' 'libwebp' 'leveldb' 'geoclue' 'pciutils'
+            'libinput' 'icu')
 groups=('qt' 'qt5')
 _pkgfqn="qt-everywhere-opensource-src-${pkgver}"
 source=("http://download.qt-project.org/official_releases/qt/${pkgver%.*}/${pkgver}/single/${_pkgfqn}.tar.xz"
         'assistant.desktop' 'designer.desktop' 'linguist.desktop' 'qdbusviewer.desktop'
-        'keypad-shortcuts.patch' 'avoid-calling-potentially-pure-virtual-method.patch'
-        'ibus-get-display-number-when-screen-number-is-omitted.patch'
-        'rpi.patch'
-        'qt5webkit-0002-Fix-QtWebKit-build-on-ARM-softfp.patch')
-md5sums=('c23bd0f14d66e7901d24906a1edce9b0'
+        'keypad-shortcuts.patch'
+        'qt5webkit-0002-Fix-QtWebKit-build-on-ARM-softfp.patch'
+        '0001-Add-ARM-64-support.patch'
+        'mali_hack.patch')
+md5sums=('65d5282f3dee0336da9ed1f77148952f'
          'b2897dd6a2967bccf8f10e397aafee55'
          '76e150b20178d2d43801f7367232e5f7'
          '188da8f4c87316e730ebf1c6217bf5a0'
          '322b419b16c75d4de0ee7ad0a246caa1'
          '665439088fc7de52a97455c5eaf87889'
-         'cab3284d52ea700b8761f4d71d68baf0'
-         '39e285d08b4951de095c2f6d6acdc925'
-         '9fe115d2c1d4778b8cb8e7f1b2e2bca6'
-         'd55ad1f1c90725834b44eada5db4e401')
+         'd55ad1f1c90725834b44eada5db4e401'
+         '47657bc1b3f51892d0cc88a271a8fa31'
+         'db6ea720827939b3cc5f20d373b82bee')
 
 prepare() {
   cd ${_pkgfqn}
@@ -76,50 +74,27 @@ prepare() {
   # https://bugs.archlinux.org/task/44676
   (cd qtbase; patch -p1 -i "$srcdir/keypad-shortcuts.patch")
 
-  # https://bugs.archlinux.org/task/43986
-  (cd qtdeclarative; patch -p1 -i "$srcdir/avoid-calling-potentially-pure-virtual-method.patch")
-
-  # https://bugs.archlinux.org/task/45180
-  (cd qtbase; patch -p1 -i "$srcdir/ibus-get-display-number-when-screen-number-is-omitted.patch")
+  # Build qmake using Arch {C,LD}FLAGS
+  # This also sets default {C,CXX,LD}FLAGS for projects built using qmake
+  sed -i -e "s|^\(QMAKE_CFLAGS_RELEASE.*\)|\1 ${CFLAGS}|" \
+    qtbase/mkspecs/common/gcc-base.conf
+  sed -i -e "s|^\(QMAKE_LFLAGS_RELEASE.*\)|\1 ${LDFLAGS}|" \
+    qtbase/mkspecs/common/g++-unix.conf
 
   MAKEFLAGS="-j3"
 
   # Fix building on armv5
-  cd qtwebkit
-  patch -p1 -i "${srcdir}"/qt5webkit-0002-Fix-QtWebKit-build-on-ARM-softfp.patch
-  cd ..
+  patch -p1 -d qtwebkit -i "${srcdir}"/qt5webkit-0002-Fix-QtWebKit-build-on-ARM-softfp.patch
 
-  # Raspberry Pi
-# if [ "$CARCH" == 'armv6h' ]; then
-#   # Removes pkg-config checks for egl and glesv2 which would interfere with our custom paths below.
-#   # Better solution would be to provide a raspberrypi-libgl package which provides 'libgl' and pkg-config modules
-#   # for the egl, glesv2 libs in /opt/vc/. Not sure if that would break other packages, though. So I'm leaving it
-#   # at this for now.
-#   patch -p1 -i "${srcdir}"/rpi.patch
-#
-#   # VideoCore libs and includes
-#   vc_include_dir="/opt/vc/include /opt/vc/include/interface/vcos/pthreads /opt/vc/include/interface/vmcs_host/linux"
-#   vc_lib_dir="/opt/vc/lib"
-#   sed -i "/^QMAKE_INCDIR_OPENGL\s/s|=|= $vc_include_dir|g" qtbase/mkspecs/common/linux.conf
-#   sed -i "/^QMAKE_LIBDIR_OPENGL\s/s|=|= $vc_lib_dir|g" qtbase/mkspecs/common/linux.conf
-#
-#   sed -i "/^QMAKE_INCDIR_EGL\s/s|=|= $vc_include_dir|g" qtbase/mkspecs/common/linux.conf
-#   sed -i "/^QMAKE_LIBDIR_EGL\s/s|=|= $vc_lib_dir|g" qtbase/mkspecs/common/linux.conf
-#   sed -i "/^QMAKE_LIBS_EGL\s/s|= -lEGL|= -lEGL -lGLESv2|g" qtbase/mkspecs/common/linux.conf
-#   sed -i "/^QMAKE_LIBS_OPENGL_ES2\s/s|= -lGLESv2|= -lEGL -lGLESv2|g" qtbase/mkspecs/common/linux.conf
-#
-#   echo "EGLFS_PLATFORM_HOOKS_SOURCES = $PWD/qtbase/mkspecs/devices/linux-rasp-pi-g++/qeglfshooks_pi.cpp" >> qtbase/mkspecs/common/linux.conf
-#   echo "EGLFS_PLATFORM_HOOKS_LIBS = -lbcm_host" >> qtbase/mkspecs/common/linux.conf
-# fi
-
-  sed -i "s|-O2|${CXXFLAGS}|" qtbase/mkspecs/common/{g++,gcc}-base.conf
-  sed -i "/^QMAKE_LFLAGS_RPATH/s| -Wl,-rpath,||g" qtbase/mkspecs/common/gcc-base-unix.conf
-  sed -i "/^QMAKE_LFLAGS\s/s|+=|+= ${LDFLAGS}|g" qtbase/mkspecs/common/gcc-base.conf
+  # Fix AArch64 support
+  patch -p1 -d qtwebkit -i "${srcdir}"/0001-Add-ARM-64-support.patch
+  
+  # Mali hack - not fully tested yet. May need more work.
+  patch -p0  -i "${srcdir}"/mali_hack.patch
 
   # Use python2 for Python 2.x
   find . -name '*.py' -exec sed -i \
     's|#![ ]*/usr/bin/python$|&2|;s|#![ ]*/usr/bin/env python$|&2|' {} +
-
   # in qtwebengine there are still a lot of relative calls which need a workaround
   mkdir "${srcdir}"/python2-path
   ln -s /usr/bin/python2 "${srcdir}"/python2-path/python
@@ -154,7 +129,9 @@ build() {
     -dbus-linked \
     -system-harfbuzz \
     -journald \
+    -libinput \
     -no-use-gold-linker \
+    -no-reduce-relocations \
     -no-sse2 \
     -no-sse3 \
     -no-ssse3 \
@@ -163,7 +140,7 @@ build() {
     -no-avx \
     -no-avx2 \
     -opengl es2 \
-    -skip webengine
+    -skip qtwebengine
 
   make
 
@@ -181,18 +158,32 @@ build() {
   find "${QTDIR}" -name Makefile \
     -exec sed -i "s|/usr/lib/qt/bin/qmlplugindump|${QTDIR}/qtdeclarative/bin/qmlplugindump|g" {} +
 
-  make docs
+#   make docs
+}
+
+package_qt5-3d() {
+  pkgdesc='C++ and QML APIs for easy inclusion of 3D graphics'
+  depends=('qt5-declarative')
+  license=('LGPL')
+
+  cd ${_pkgfqn}/qt3d
+  make INSTALL_ROOT="${pkgdir}" install
+
+  # Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+  find "${pkgdir}/usr/lib" -type f -name '*.prl' \
+    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
 }
 
 package_qt5-base-neon() {
   pkgdesc='A cross-platform application and UI framework'
-  depends=('libjpeg-turbo' 'xcb-util-keysyms' 'dbus' 'fontconfig' 'systemd'
+  depends=('libjpeg-turbo' 'xcb-util-keysyms' 'libgl' 'dbus' 'fontconfig' 'systemd'
            'xcb-util-wm' 'libxrender' 'libxi' 'sqlite' 'xcb-util-image' 'icu'
-           'qtchooser' 'libgl')
+           'qtchooser' 'libinput')
   optdepends=('qt5-svg: to use SVG icon themes'
               'postgresql-libs: PostgreSQL driver'
               'libmariadbclient: MariaDB driver'
               'unixodbc: ODBC driver'
+              'libfbclient: Firebird/iBase driver'
               'mtdev: evdev plugin'
               'libxkbcommon-x11: xcb plugin'
               'libsm: xcb plugin'
@@ -219,6 +210,21 @@ package_qt5-base-neon() {
   for b in "${pkgdir}"/usr/lib/qt/bin/*; do
     ln -s /usr/lib/qt/bin/$(basename $b) "${pkgdir}"/usr/bin/$(basename $b)-qt5
   done
+}
+
+package_qt5-canvas3d-neon() {
+  pkgdesc='A JavaScript 3D rendering API for Qt Quick'
+  depends=('qt5-declarative-neon')
+  license=('LGPL')
+  conflicts=('qt5-canvas3d')
+  provides=('qt5-canvas3d')
+  
+  cd ${_pkgfqn}/qtcanvas3d
+  make INSTALL_ROOT="${pkgdir}" install
+
+  # Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+  find "${pkgdir}/usr/lib" -type f -name '*.prl' \
+    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
 }
 
 package_qt5-connectivity-neon() {
@@ -261,22 +267,22 @@ package_qt5-declarative-neon() {
     "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
 }
 
-package_qt5-doc-neon() {
-  pkgdesc='A cross-platform application and UI framework (Documentation)'
-  depends=('qt5-base-neon')
-#  arch=('any')
-  conflicts=('qt-doc' 'qt5-doc')
-  replaces=('qt-doc')
-  provides=('qt-doc' 'qt5-doc')
-  options=('docs' '!emptydirs')
-  groups=()
-
-  cd ${_pkgfqn}
-  make INSTALL_ROOT="${pkgdir}" install_docs
-
-  install -D -m644 LGPL_EXCEPTION.txt \
-    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
-}
+# package_qt5-doc-neon() {
+#   pkgdesc='A cross-platform application and UI framework (Documentation)'
+#   depends=('qt5-base-neon')
+# #  arch=('any')
+#   conflicts=('qt-doc' 'qt5-doc')
+#   replaces=('qt-doc')
+#   provides=('qt-doc' 'qt5-doc')
+#   options=('docs' '!emptydirs')
+#   groups=()
+# 
+#   cd ${_pkgfqn}
+#   make INSTALL_ROOT="${pkgdir}" install_docs
+# 
+#   install -D -m644 LGPL_EXCEPTION.txt \
+#     "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+# }
 
 package_qt5-enginio-neon() {
   pkgdesc='A Backend-as-a-Service solution to ease the backend development for connected and data-driven application'
@@ -424,8 +430,6 @@ package_qt5-quickcontrols-neon() {
   cd ${_pkgfqn}/qtquickcontrols
   make INSTALL_ROOT="${pkgdir}" install
 
-  install -D -m644 LGPL_EXCEPTION.txt \
-    "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
 }
 
 package_qt5-script-neon() {
