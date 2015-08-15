@@ -1,0 +1,94 @@
+# Maintainer: Vlad M. <vlad@archlinux.net>
+# Contributor: Attila Bukor <r1pp3rj4ck [at] w4it [dot] eu>
+# Contributor: Hugo Osvaldo Barrera <hugo@barrera.io>
+# Contributor: xantares <xantares09@hotmail.com>
+# Contributor: Eric Engestrom <aur [at] engestrom [dot] ch>
+# Contributor: Iwan Timmer <irtimmer@gmail.com>
+# Contributor: Ricardo Band <me [at] xengi [dot] de>
+
+# Modifier: gripped forum.odroid.com (credit to Leonard for the build instructions and patched files)
+
+pkgname=popcorntime-xu3
+_pkgname=popcorntime
+pkgver=0.3.8.2
+_pkgver=0.3.8-2
+pkgrel=1
+pkgdesc="Stream movies from torrents. Skip the downloads. Launch, click, watch."
+arch=('i686' 'x86_64')
+url="http://popcorntime.io/"
+license=('GPL3')
+makedepends=('git'
+             'nodejs-bower' # install from AUR
+             'nodejs-grunt-cli' # install from AUR
+             'npm')
+depends=('alsa-lib'
+         'gconf'
+         'gtk2'
+         'libnotify'
+         'libxtst'
+         'nss'
+         'ttf-font')
+optdepends=('net-tools: vpn.ht client')
+options=('!strip')
+install="popcorntime.install"
+_gitname=desktop.git
+_nw_ver=0.12.0
+
+_platform=linuxarm
+_nw_platform=linux-arm
+if [ "$CARCH" = 'i686' ]; then
+  _platform=linux32
+  _nw_platform=linux-ia32
+fi
+
+source=("desktop-v${_pkgver}.tar.bz2::https://git.popcorntime.io/popcorntime/desktop/repository/archive.tar.bz2?ref=v${_pkgver}"
+        "desktop-i18n-master.tar.bz2::https://git.popcorntime.io/popcorntime/desktop-i18n/repository/archive.tar.bz2?ref=master"
+        "popcorntime.desktop"
+        'Gruntfile.js'
+        'node_webkit_builder.js')
+sha256sums=('d6d489fbbb8b57b25d36866ac8fc75f10ccb1c4fd9cb6a1332d06b38edf20d48'
+            '447bafbdbd06f9e7833732629f333f71b52c78b48dbc0818bfbbc7e2de1e0f47'
+            'f89595aeaf1c09ad2b0a869be1ad14922b4747f901cec0f1b65c4c72719dcdec'
+            '55368eb778120d5d6f9f9f0516e50c2762e7108fef5b0379364dc65232834153'
+            'f7db61565206a788185c508977e473a9003e57a329b598a0a22a4ab7768484de')
+
+prepare() {
+  cd "${srcdir}/${_gitname}"
+
+  cp "${srcdir}"/desktop-i18n.git/* src/app/language
+
+  export PYTHON=/usr/bin/python2
+
+  npm install
+  cp -v "${srcdir}"/Gruntfile.js .
+  cp -v "${srcdir}"/node_webkit_builder.js node_modules/grunt-node-webkit-builder/tasks/node_webkit_builder.js
+}
+
+build() {
+  cd "${srcdir}/${_gitname}"
+
+  grunt css
+  grunt bower_clean
+  grunt nodewebkit || grunt nodewebkit
+}
+
+package() {
+  cd "${srcdir}"
+
+  _bpath="${srcdir}/${_gitname}/build/releases/Popcorn-Time/${_platform}/Popcorn-Time"
+
+  install -dm755 "${pkgdir}/usr/lib/${_pkgname}"
+  install -dm755 "${pkgdir}/usr/bin"
+
+  install -Dm755 "${_bpath}/Popcorn-Time" "${pkgdir}/usr/lib/${_pkgname}/"
+  install -Dm644 "${_bpath}/nw.pak" "${pkgdir}/usr/lib/${_pkgname}/"
+  install -Dm644 "${_bpath}/libffmpegsumo.so" "${pkgdir}/usr/lib/${_pkgname}/"
+  install -Dm644 "${srcdir}/${_gitname}/build/cache/${_platform}/${_nw_ver}/icudtl.dat" "${pkgdir}/usr/lib/${_pkgname}/"
+
+  mkdir -p "${pkgdir}/usr/bin"
+  ln -s "/usr/lib/${_pkgname}/Popcorn-Time" "${pkgdir}/usr/bin/${_pkgname}"
+
+  install -Dm644 "${srcdir}/popcorntime.desktop" "${pkgdir}/usr/share/applications/popcorntime.desktop"
+
+  install -Dm644 "${srcdir}/${_gitname}/src/app/images/icon.png" "${pkgdir}/usr/share/pixmaps/popcorntime.png"
+}
