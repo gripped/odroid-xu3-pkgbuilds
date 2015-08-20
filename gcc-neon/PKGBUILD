@@ -20,7 +20,7 @@ pkgname=('gcc-neon' 'gcc-libs-neon' 'gcc-fortran-neon' 'gcc-objc-neon' 'gcc-go-n
 pkgver=5.2.0
 _pkgver=1
 _islver=0.14.1
-pkgrel=1
+pkgrel=2
 #_snapshot=5-20150623
 pkgdesc="The GNU Compiler Collection"
 arch=('i686' 'x86_64')
@@ -127,7 +127,7 @@ package_gcc-libs-neon()
 {
   pkgdesc="Runtime libraries shipped by GCC"
   groups=('base')
-  depends=('glibc-neon>=2.21')
+  depends=('glibc-neon>=2.22')
   options=('!emptydirs' '!strip')
   install=gcc-libs.install
   conflicts=('gcc-libs')
