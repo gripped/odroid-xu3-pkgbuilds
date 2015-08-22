@@ -1,0 +1,15 @@
+--- desktop.git/src/app/lib/device/ext-player.js	2015-08-21 17:25:26.423972427 +0100
++++ desktop.git/src/app/lib/device/ext-player.js.new	2015-08-21 17:25:03.323941807 +0100
+@@ -169,6 +169,12 @@
+             switches: '',
+             subswitch: '--set-subtitle ',
+             fs: '--action window/enter-fs'
++        },
++        'kodi': {
++            type: 'kodi',
++            switches: '',
++            subswitch: '/usr/lib/popcorntime/stream.strm',
++            fs: ''
+         }
+     };
+ 

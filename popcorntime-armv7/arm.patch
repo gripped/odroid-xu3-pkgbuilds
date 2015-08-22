@@ -1,0 +1,203 @@
+--- desktop.git/Gruntfile.js	2015-02-16 12:49:30.000000000 +0000
++++ desktop.git/Gruntfile.js.new	2015-08-15 20:31:45.000000000 +0100
+@@ -19,7 +19,7 @@
+ 
+ 	// Do some scrubbing to make it easier to match in the regexes bellow
+ 	inputPlatforms = inputPlatforms.replace("darwin", "mac");
+-	inputPlatforms = inputPlatforms.replace(/;ia|;x|;arm/, "");
++	inputPlatforms = inputPlatforms.replace(/;ia|;x|;/, "");
+ 
+ 	var buildAll = /^all$/.test(inputPlatforms);
+ 
+@@ -27,7 +27,8 @@
+ 		mac: /mac/.test(inputPlatforms) || buildAll,
+ 		win: /win/.test(inputPlatforms) || buildAll,
+ 		linux32: /linux32/.test(inputPlatforms) || buildAll,
+-		linux64: /linux64/.test(inputPlatforms) || buildAll
++		linux64: /linux64/.test(inputPlatforms) || buildAll,
++		linuxarm: /linuxarm/.test(inputPlatforms) || buildAll
+ 	};
+ 
+ 	return buildPlatforms;
+@@ -103,6 +104,8 @@
+ 			grunt.task.run('exec:linux32');
+ 		} else if (start.linux64) {
+ 			grunt.task.run('exec:linux64');
++		} else if (start.linuxarm) {
++			grunt.task.run('exec:linuxarm');
+ 		} else {
+ 			grunt.log.writeln('OS not supported.');
+ 		}
+@@ -117,6 +120,7 @@
+ 	]);
+ 
+ 	grunt.registerTask('package', [
++		'shell:packageLinuxarm',
+ 		'shell:packageLinux64',
+ 		'shell:packageLinux32',
+ 		'shell:packageWin',
+@@ -202,6 +206,7 @@
+ 		nodewebkit: {
+ 			options: {
+ 				version: '0.12.1',
++				arm_version: '0.12.0',
+ 				build_dir: './build', // Where the build version of my node-webkit app is saved
+ 				keep_nw: true,
+ 				embed_nw: false,
+@@ -211,7 +216,9 @@
+ 				win: buildPlatforms.win,
+ 				linux32: buildPlatforms.linux32,
+ 				linux64: buildPlatforms.linux64,
+-				download_url: 'http://get.popcorntime.io/nw/'
++				linuxarm: buildPlatforms.linuxarm,
++				download_url: 'http://get.popcorntime.io/nw/',
++				arm_download_url: 'http://localhost/nw/'
+ 			},
+ 			src: ['./src/**', '!./src/app/styl/**',
+ 				'./node_modules/**', '!./node_modules/bower/**', '!./node_modules/*grunt*/**', '!./node_modules/stylus/**',
+@@ -233,6 +240,9 @@
+ 			linux64: {
+ 				cmd: '"build/cache/linux64/<%= nodewebkit.options.version %>/nw" .'
+ 			},
++			linuxarm: {
++				cmd: '"build/cache/linuxarm/<%= nodewebkit.options.arm_version %>/nw" --use-gl=egl .'
++			},
+ 			codesign: {
+ 				cmd: 'sh dist/mac/codesign.sh || echo "Codesign failed, likely caused by not being run on mac, continuing"'
+ 			},
+@@ -299,6 +309,22 @@
+                     }
+                 }
+             },
++			packageLinuxarm: {
++				command: function () {
++					if (host.linux || host.mac) {
++						return [
++							'cd build/releases/Popcorn-Time/linuxarm/Popcorn-Time',
++							'tar --exclude-vcs -c . | $(command -v pxz || command -v xz) -T8 -7 > "../Popcorn-Time-' + currentVersion + '-Linux-arm.tar.xz"',
++							'echo "Linuxarm Sucessfully packaged" || echo "Linuxarm failed to package"'
++						].join(' && ');
++					} else {
++						return [
++							'grunt compress:linuxarm',
++							'( echo "Compressed sucessfully" ) || ( echo "Failed to compress" )'
++						].join(' && ');
++					}
++				}
++			},
+ 			packageLinux64: {
+                 command: function() {
+                     if(host.linux || host.mac) {
+@@ -386,6 +412,16 @@
+                 src: '**',
+                 dest: 'Popcorn-Time'
+             },
++			linuxarm: {
++				options: {
++					mode: 'tgz',
++					archive: 'build/releases/Popcorn-Time/linuxarm/Popcorn-Time-' + currentVersion + '-Linux-arm.tar.gz'
++				},
++				expand: true,
++				cwd: 'build/releases/Popcorn-Time/linuxarm/Popcorn-Time',
++				src: '**',
++				dest: 'Popcorn-Time'
++			},
+             mac: {
+                 options: {
+                     mode: 'tgz',
+--- desktop.git/node_modules/grunt-node-webkit-builder/tasks/node_webkit_builder.js	2014-04-28 14:22:26.000000000 +0100
++++ desktop.git/node_modules/grunt-node-webkit-builder/tasks/node_webkit_builder.js.new	2015-08-15 20:49:37.000000000 +0100
+@@ -31,6 +31,7 @@
+       downloadDone = [],
+       options = this.options({
+           version: '0.9.2',
++	  arm_version: null,
+           app_name: null,
+           app_version: null,
+           build_dir: null, // Path where
+@@ -39,8 +40,10 @@
+           mac: true,
+           linux32: false,
+           linux64: false,
++          linuxarm: false,
+           mac_icns: false,
+           download_url: 'http://dl.node-webkit.org/',
++          arm_download_url: 'http://localhost/',
+           timestamped_builds: false,
+           credits: false,
+           keep_nw: false,
+@@ -74,6 +77,13 @@
+         'nwpath': 'nw',
+         'app': '%APPNAME%',
+         'exclude': ['nwsnapshot']
++      }, {
++        'url': "v%VERSION%/nwjs-v%VERSION%-linux-arm.tar.gz",
++        'type': 'linuxarm',
++        'files': ['nw', 'nw.pak', 'libffmpegsumo.so', 'icudtl.dat'],
++        'nwpath': 'nw',
++        'app': '%APPNAME%',
++        'exclude': ['nwsnapshot']
+       }];
+ 
+     // ***************************************************************************
+@@ -81,7 +91,7 @@
+     // And generate the release path and files
+ 
+     // Check the target plattforms
+-    if (!_.any(_.pick(options,"win","mac","linux32","linux64"))) {
++    if (!_.any(_.pick(options,"win","mac","linux32","linux64","linuxarm"))) {
+       grunt.log.warn("No platforms to build!");
+       return done();
+     }
+@@ -105,7 +115,7 @@
+ 
+       // We are building for one of these platforms
+       // that requires a zip
+-      _.any(_.pick(options, "win", "linux32", "linux64"))
++      _.any(_.pick(options, "win", "linux32", "linux64","linuxarm"))
+     );
+ 
+     // Generate the release path
+@@ -134,15 +144,29 @@
+     // Download and unzip / untar the needed files
+     webkitFiles.forEach(function(plattform) {
+       if (options[plattform.type]) {
++        if (plattform.type === 'linuxarm') {
++		plattform.url = "https://raw.githubusercontent.com/LeonardLaszlo/popcorn-time-building-guide-armv7/master/nwjs-v0.12.0-linux-arm.tar.gz";
++	} else {
+         plattform.url = options.download_url + plattform.url.split('%VERSION%').join(options.version);
++	}
+         plattform.app = plattform.app.split('%APPNAME%').join(options.app_name);
+         plattform.nwpath = plattform.nwpath.split('%APPNAME%').join(options.app_name);
++	
++        if (plattform.type === 'linuxarm') {
++		plattform.dest = path.resolve(
++		  options.build_dir,
++		  'cache',
++		  plattform.type,
++		  options.arm_version
++		);
++	} else {
+         plattform.dest = path.resolve(
+           options.build_dir,
+           'cache',
+           plattform.type,
+           options.version
+         );
++	}
+ 
+         // If force is true we delete the path
+         if (grunt.file.isDir(plattform.dest) && options.force_download) {
+@@ -263,7 +287,11 @@
+         if(!options.keep_nw) {
+           compress.cleanUpRelease(zipFile);
+         }
++	if (options.arm_version) {
++		grunt.log.oklns('Created a new release with node-webkit ('+options.version+') and ('+options.arm_version+') for '+plattforms.join(', '));
++	} else {
+         grunt.log.oklns('Created a new release with node-webkit ('+options.version+') for '+plattforms.join(', '));
++	}
+         grunt.log.ok('@ ' + release_path);
+         done();
+       });
+ 

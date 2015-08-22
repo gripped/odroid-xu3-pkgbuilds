@@ -3,6 +3,8 @@ post_install() {
   echo "WARNING: Popcorn Time streams movies from Torrents"
   echo "Downloading copyrighted material may be illegal in your country!"
   echo "Use at your own risk!"
+  
+  echo "Set popcorntime output port to 51234 to use kodi as an external player"
 }
 
 post_upgrade() {
