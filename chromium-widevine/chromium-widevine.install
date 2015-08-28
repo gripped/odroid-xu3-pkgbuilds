@@ -1,0 +1,16 @@
+post_install() {
+  message
+}
+
+post_upgrade() {
+  message
+}
+
+
+message() {
+  bold=`tput bold`
+  boff=`tput sgr0`
+  echo ""
+  echo "${bold}You may need to use this user agent${boff}"
+  echo "Mozilla/5.0 (X11; CrOS armv7l 7077.134.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.156 Safari/537.36"
+} 
