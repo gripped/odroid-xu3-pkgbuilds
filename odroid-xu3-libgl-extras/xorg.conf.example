@@ -1,0 +1,25 @@
+Section "Device"
+   Identifier "Mali-Fbdev"
+   Driver   "armsoc"
+   Option   "fbdev"           "/dev/fb0"
+   Option  "DriverName"      "exynos"
+   Option  "Debug" "false"
+EndSection
+
+Section "Screen"
+   Identifier   "Mali-Screen"
+   Device       "Mali-Fbdev"
+   DefaultDepth 24 
+EndSection
+
+Section "DRI"
+   Mode 0666
+EndSection
+
+Section "ServerFlags"
+  Option "blank time" "0"
+  Option "standby time" "0"
+  Option "suspend time" "0"
+  Option "off time" "0"
+  Option "dpms" "false"
+EndSection

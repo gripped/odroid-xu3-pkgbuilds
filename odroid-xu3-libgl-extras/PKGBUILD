@@ -1,0 +1,27 @@
+# ODROID Mali GL Driver
+# Maintainer: gripped - forum.odroid.com
+
+buildarch=4
+
+pkgname=odroid-xu3-libgl-extras
+pkgver=1
+pkgrel=1
+arch=('armv7h')
+pkgdesc="ODROID Mali GL Driver"
+url="http://malideveloper.arm.com/"
+license=('gpl')
+install=odroid-xu3-libgl-extras.install
+source=('50-mali.rules'
+	'xorg.conf.example')
+md5sums=('058d139371185145bcc7dfd5b33413d6'
+         'bbf535435eec03caa207a2d955077ed4')
+
+package() {
+
+    cd ${srcdir}
+    install -d -m 0755 ${pkgdir}/usr/share/mali
+    install -m 0644 ${srcdir}/xorg.conf.example ${pkgdir}/usr/share/mali/xorg.conf.example		
+    install -d -m 0755 ${pkgdir}/usr/lib/udev/rules.d
+    install -m 0644 50-mali.rules ${pkgdir}/usr/lib/udev/rules.d/50-mali.rules
+
+}
