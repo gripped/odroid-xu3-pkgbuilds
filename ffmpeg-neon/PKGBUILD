@@ -8,7 +8,7 @@
 pkgname=ffmpeg-neon
 _pkgname=ffmpeg
 pkgver=2.7.2
-pkgrel=2
+pkgrel=3
 epoch=1
 pkgdesc='Complete and free Internet live audio and video broadcasting solution'
 arch=('i686' 'x86_64')
@@ -20,7 +20,8 @@ depends=(
       'libvpx-neon' 'libwebp' 'opencore-amr' 'openjpeg' 'opus' 'rtmpdump' 'schroedinger'
        'sdl' 'speex' 'v4l-utils' 'libx264-neon' 'xvidcore' 'zlib' 'x265-neon' 'fribidi' 
       )
-makedepends=('yasm' 'hardening-wrapper')
+makedepends=('hardening-wrapper' 'ladspa' 'yasm')
+optdepends=('ladspa: LADSPA filters')
 conflicts=('ffmpeg')
 provides=('ffmpeg=${pkgver}' 'libavcodec.so' 'libavdevice.so' 'libavfilter.so' 
           'libavformat.so' 'libavresample.so' 'libavutil.so'
@@ -55,6 +56,7 @@ build() {
     --enable-fontconfig \
     --enable-gnutls \
     --enable-gpl \
+    --enable-ladspa \
     --enable-libass \
     --enable-libbluray \
     --enable-libfreetype \
