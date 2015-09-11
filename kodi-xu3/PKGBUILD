@@ -14,10 +14,10 @@ _prefix=/usr
 
 pkgbase=kodi-xu3
 pkgname=('kodi-xu3' 'kodi-eventclients-xu3')
-pkgver=15.1rc1
+pkgver=15.2rc2
 _codename=Isengard
-_commit=9823c38515e527139af2e5f24f61d351063f97e4
-pkgrel=7
+_commit=b00d3a6f7baed1b6c2a5569dd3c2cddc5f25effc
+pkgrel=1
 arch=('i686' 'x86_64')
 url="http://kodi.tv"
 license=('GPL2')
@@ -36,7 +36,7 @@ source=(
   '51-cec.rules'
   'mali.patch'
 )
-sha256sums=('54e2d5bdfafc4981f865a1b73bea4ffdab39f6d1f283a3bf4dadbf9d980439c4'
+sha256sums=('d9aaa35cf9561d62677083f281b2e482c787e2e9052403d03ba4ce358ae12b1a'
             '3f5eb4e0fc8142c865e93ad88468b16e9c750f9994795ac06f1b9e9e3f570d0c'
             '42d5adfb911e889134f8b81b509fc15a145e4b3e78be9505a46c47a36100e96f'
             '16c28ed97c0b2710a07a4bf7e4d5d23a1efcfd9fddc2334ce53a0f0003e1f31c')
@@ -109,10 +109,11 @@ package_kodi-xu3() {
     'unrar: Archives support'
     'unzip: Archives support'
     'upower: Display battery level'
+    'lsb-release: log distro information in crashlog'
   )
   install="kodi.install"
-  provides=('xbmc')
-  conflicts=('xbmc' 'xbmc-xu3')
+  provides=('xbmc' 'kodi')
+  conflicts=('xbmc' 'xbmc-xu3' 'kodi')
   replaces=('xbmc' 'xbmc-xu3')
 
   cd "$srcdir/xbmc-$_commit"
@@ -135,6 +136,7 @@ package_kodi-eventclients-xu3() {
   pkgdesc="Kodi Event Clients"
 
   depends=('cwiid')
+  conflicts=('kodi-eventclients')
 
   cd "$srcdir/xbmc-$_commit"
 
