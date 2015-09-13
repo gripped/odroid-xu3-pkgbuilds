@@ -10,8 +10,8 @@
 
 pkgname=popcorntime-armv7
 _pkgname=popcorntime
-pkgver=0.3.8.3
-_pkgver=0.3.8-3
+pkgver=0.3.8.5
+_pkgver=0.3.8-5
 pkgrel=1
 pkgdesc="Stream movies from torrents. Skip the downloads. Launch, click, watch."
 arch=('armv7')
@@ -34,31 +34,29 @@ options=('!strip')
 install="popcorntime.install"
 conflicts=('popcorntime-xu3')
 replaces=('popcorntime-xu3')
-_gitname=desktop.git
+_commit_hash="9d0b6efe81f5a0a005e244115a94139a62a76459"
+_gitname="desktop-v${_pkgver}-${_commit_hash}"
 _nw_ver=0.12.0
 
 _platform=linuxarm
 _nw_platform=linux-arm
 
 source=("desktop-v${_pkgver}.tar.bz2::https://git.popcorntime.io/popcorntime/desktop/repository/archive.tar.bz2?ref=v${_pkgver}"
-        "desktop-i18n-master.tar.bz2::https://git.popcorntime.io/popcorntime/desktop-i18n/repository/archive.tar.bz2?ref=master"
         "popcorntime.desktop"
         'arm.patch'
         'kodi.patch'
         'stream.strm'
         'external-kodi-icon.png')
-sha256sums=('c8a41e3751439ba2f109f4543511999f0f2b6e8844a3bfea3d864174529a64b8'
-            '447bafbdbd06f9e7833732629f333f71b52c78b48dbc0818bfbbc7e2de1e0f47'
+sha256sums=('b4980fc2ba7ffd53fbf7463b09d39a9f14a8b138708e3fb7f36a0939a3184190'
             '86d4e736d9fff29fad9892396d1b141c8768db3b80c529391d7b79f4c28c3126'
-            '76655d9150e483970a179e5c41ef5035ccf338fa7d33387cfd875dbc61dd26fa'
-            'a886118ef0dbb7d0a0e58753456bb353cdf71562410e09b34f56751a8ee9ee60'
+            'f231dcfcac43ebb0d44b89a2c314d9447ceffdb1f9dc30a6f82262623d12aa66'
+            '4e289c57ac57b975d438ae5a5e7094e5ce20303cb0fe92ab5ca7aaf16cd68f62'
             'c3ec78add813aa509e5dc231e04138ac83b2112ea565a40c7506c4de533fc8e4'
             'b37479efe014e4c23e603d1361bb039471e5fdfd24dba6c10078d2393e014fa7')
 
 prepare() {
   cd "${srcdir}/${_gitname}"
 
-  cp "${srcdir}"/desktop-i18n.git/* src/app/language
 
   export PYTHON=/usr/bin/python2
 
@@ -68,9 +66,7 @@ prepare() {
   patch --ignore-whitespace -p1 -i ../kodi.patch  #enable kodi as external player
   
   cp -v "${srcdir}"/external-kodi-icon.png src/app/images/icons/external-kodi-icon.png
-  
-#  cp -v "${srcdir}"/Gruntfile.js .
-#  cp -v "${srcdir}"/node_webkit_builder.js node_modules/grunt-node-webkit-builder/tasks/node_webkit_builder.js
+
 }
 
 build() {

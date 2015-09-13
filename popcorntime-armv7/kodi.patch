@@ -7,8 +7,8 @@
 +        },
 +        'kodi': {
 +            type: 'kodi',
-+            switches: '',
-+            subswitch: '/usr/lib/popcorntime/stream.strm',
++            switches: '/usr/lib/popcorntime/stream.strm',
++            subswitch: '',
 +            fs: ''
          }
      };
