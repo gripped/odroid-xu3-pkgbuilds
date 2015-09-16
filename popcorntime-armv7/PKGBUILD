@@ -12,7 +12,7 @@ pkgname=popcorntime-armv7
 _pkgname=popcorntime
 pkgver=0.3.8.5
 _pkgver=0.3.8-5
-pkgrel=1
+pkgrel=3
 pkgdesc="Stream movies from torrents. Skip the downloads. Launch, click, watch."
 arch=('armv7')
 url="http://popcorntime.io/"
@@ -36,7 +36,7 @@ conflicts=('popcorntime-xu3')
 replaces=('popcorntime-xu3')
 _commit_hash="9d0b6efe81f5a0a005e244115a94139a62a76459"
 _gitname="desktop-v${_pkgver}-${_commit_hash}"
-_nw_ver=0.12.0
+_nw_ver=0.12.2
 
 _platform=linuxarm
 _nw_platform=linux-arm
@@ -49,11 +49,10 @@ source=("desktop-v${_pkgver}.tar.bz2::https://git.popcorntime.io/popcorntime/des
         'external-kodi-icon.png')
 sha256sums=('b4980fc2ba7ffd53fbf7463b09d39a9f14a8b138708e3fb7f36a0939a3184190'
             '86d4e736d9fff29fad9892396d1b141c8768db3b80c529391d7b79f4c28c3126'
-            'f231dcfcac43ebb0d44b89a2c314d9447ceffdb1f9dc30a6f82262623d12aa66'
+            '22e553e30a9cfb125f2dffb875b5134480865ba45639faf45376e536526fb7bf'
             '4e289c57ac57b975d438ae5a5e7094e5ce20303cb0fe92ab5ca7aaf16cd68f62'
             'c3ec78add813aa509e5dc231e04138ac83b2112ea565a40c7506c4de533fc8e4'
             'b37479efe014e4c23e603d1361bb039471e5fdfd24dba6c10078d2393e014fa7')
-
 prepare() {
   cd "${srcdir}/${_gitname}"
 
