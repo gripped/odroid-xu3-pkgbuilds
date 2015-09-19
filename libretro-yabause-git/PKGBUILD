@@ -2,7 +2,7 @@
 
 pkgname=libretro-yabause-git
 _gitname=yabause
-pkgver=2498.5b4316a
+pkgver=2767.f297693
 pkgrel=1
 pkgdesc="libretro implementation of Yabause. (Sega Saturn)"
 arch=('i686' 'x86_64' 'arm' 'armv6h')

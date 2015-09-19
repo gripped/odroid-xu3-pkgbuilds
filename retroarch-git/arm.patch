@@ -1,0 +1,13 @@
+--- frontend/drivers/platform_linux.c	2015-09-19 09:25:29.773999228 +0000
++++ frontend/drivers/platform_linux.c.new	2015-09-19 09:27:04.549092439 +0000
+@@ -31,9 +31,7 @@
+ #ifdef ANDROID
+ #include <sys/system_properties.h>
+ #endif
+-#ifdef __arm__
+-#include <machine/cpu-features.h>
+-#endif
++
+ 
+ #include <boolean.h>
+ #include <retro_dirent.h>

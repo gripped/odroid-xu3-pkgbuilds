@@ -2,8 +2,10 @@
 # Contributor: almostalive   <almostalive2003 at gmail dot com>
 # Contributor: Themaister    <maister@archlinux.us>
 
+# Modifier gripped <forum.odroid.com>  Note fails to build with GCC 5.2.0
+
 pkgname=retroarch-git
-pkgver=1.0.0.3.beta.r4953.g7322b01
+pkgver=v1.2.2.r1054.g08c0cf1
 pkgrel=1
 pkgdesc="Reference frontend for the libretro API."
 arch=('i686' 'x86_64' 'arm' 'armv6h')
@@ -11,15 +13,18 @@ url="http://github.com/libretro/RetroArch"
 license=('GPL')
 # optional build-time deps: 'openal', 'libxml2', 'nvidia-cg-toolkit', 'sdl_image'
 # see: 'retroarch --features' for more.
-depends=('libgl')
+depends=('jack2' 'libgl' 'libusb' 'libxinerama' 'libxkbcommon'
+	 'libxv' 'mesa' 'openal' 'python')
 optdepends=('libretro-super-git: A collection of many libretro implementations.')
 makedepends=('git')
 provides=('retroarch')
 conflicts=('retroarch')
 
 _gitname=RetroArch
-source=("git+https://github.com/libretro/${_gitname}.git")
-md5sums=('SKIP')
+source=("git+https://github.com/libretro/${_gitname}.git"
+        'arm.patch')
+md5sums=('SKIP'
+         '242488607dbb5d36b6d8e3b2584d2b5d')
 
 pkgver() {
   cd "${_gitname}"
@@ -31,6 +36,7 @@ pkgver() {
 
 build() {
   cd "${_gitname}"
+  patch -p0 -i ../arm.patch
   ./configure --prefix=/usr --enable-udev --enable-threads --disable-ffmpeg --enable-gles --disable-kms \
   --disable-vg --enable-pulse --disable-xvideo --disable-sdl --enable-gles3 \
   --enable-fbo --enable-neon --disable-sdl2 --enable-floathard
