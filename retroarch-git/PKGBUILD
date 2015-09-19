@@ -7,6 +7,7 @@
 pkgname=retroarch-git
 pkgver=v1.2.2.r1054.g08c0cf1
 pkgrel=1
+epoch=1
 pkgdesc="Reference frontend for the libretro API."
 arch=('i686' 'x86_64' 'arm' 'armv6h')
 url="http://github.com/libretro/RetroArch"
