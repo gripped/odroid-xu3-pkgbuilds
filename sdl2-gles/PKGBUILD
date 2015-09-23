@@ -1,0 +1,46 @@
+# Maintainer: Sven-Hendrik Haase <sh@lutzhaase.com>
+# Modifier: gripped <forum.odroid.com>
+pkgname=sdl2-gles-git
+_pkgname=sdl2
+pkgver=r9876.1496e502e51d
+_pkgver=2.0.3
+pkgrel=1
+pkgdesc="A library for portable low-level access to a video framebuffer, audio output, mouse, and keyboard (Version 2)"
+arch=('i686' 'x86_64')
+url="http://www.libsdl.org"
+license=('MIT')
+depends=('glibc' 'libxext' 'libxrender' 'libx11' 'libgl' 'libxcursor')
+makedepends=('alsa-lib' 'mesa' 'libpulse' 'libxrandr' 'libxinerama' 'wayland' 'libxkbcommon')
+conflicts=('sdl2')
+provides=("sdl2=${_pkgver}")
+optdepends=('alsa-lib: ALSA audio driver'
+            'libpulse: PulseAudio audio driver')
+source=("sdl2::hg+http://hg.libsdl.org/SDL")
+md5sums=('SKIP')
+
+pkgver() {
+  cd "$_pkgname"
+  printf "r%s.%s" "$(hg identify -n)" "$(hg identify -i)"
+}
+
+prepare() {
+  mkdir build
+}
+
+build() {
+  cd build
+  ../$_pkgname/configure --prefix=/usr \
+    --enable-sdl-dlopen \
+    --disable-arts --disable-esd --disable-nas \
+    --enable-alsa --enable-pulseaudio-shared \
+    --enable-video-wayland \
+    --disable-video-opengl --enable-directfb-shared \
+    --disable-rpath
+  make
+}
+
+package() {
+  cd build
+  make DESTDIR="$pkgdir" install
+  install -Dm644 ../$_pkgname/COPYING.txt "$pkgdir/usr/share/licenses/$_pkgname/LICENSE"
+}
