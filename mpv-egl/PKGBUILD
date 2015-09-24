@@ -1,6 +1,6 @@
 # $Id$
 # Maintainer: Christian Hesse <mail@eworm.de>
-# Contributor:  Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+# Contributor:  Bart??omiej Piotrowski <bpiotrowski@archlinux.org>
 # Contributor: Eivind Uggedal <eivind@uggedal.com>
 
 # ALARM: Kevin Mihelich <kevin@archlinuxarm.org>
@@ -8,7 +8,7 @@
 
 pkgname=mpv-egl
 _pkgname=mpv
-pkgver=0.10.0
+pkgver=0.11.0
 pkgrel=1
 pkgdesc='Video player based on MPlayer/mplayer2'
 arch=('i686' 'x86_64')
@@ -27,7 +27,7 @@ options=('!emptydirs' '!buildflags')
 install=mpv.install
 source=("$_pkgname-$pkgver.tar.gz::https://github.com/mpv-player/$_pkgname/archive/v$pkgver.tar.gz"
         'mpv.conf')
-sha256sums=('f9eaec3e4f6094c4d889ab04f86c479a089c389616e1a5522c92fedb2fe7044c'
+sha256sums=('a2157174e46db46dad5deb1fde94283e72ebe922fd15447cb16a2a243fae5bda'
             '2e5be82127d1bdc709c16e397a9fcf015736eab7b1e6e03b03f42b37d4ef3b87')
 
 prepare() {
