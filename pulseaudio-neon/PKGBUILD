@@ -13,7 +13,7 @@ _pkgbase=pulseaudio
 pkgname=(pulseaudio-neon libpulse-neon pulseaudio-{gconf,zeroconf,lirc,jack,bluetooth,equalizer})
 pkgdesc="A featureful, general-purpose sound server"
 pkgver=7.0
-pkgrel=1
+pkgrel=1.1
 arch=(i686 x86_64)
 url="http://www.freedesktop.org/wiki/Software/PulseAudio"
 license=(LGPL)
@@ -54,7 +54,7 @@ build() {
 }
 
 package_pulseaudio-neon() {
-  depends=("libpulse=$pkgver-$pkgrel" rtkit libltdl speexdsp tdb orc
+  depends=("libpulse-neon=$pkgver-$pkgrel" rtkit libltdl speexdsp tdb orc
            webrtc-audio-processing sbc libsoxr)
   optdepends=('pulseaudio-alsa: ALSA configuration (recommended)')
   conflicts=('pulseaudio')
