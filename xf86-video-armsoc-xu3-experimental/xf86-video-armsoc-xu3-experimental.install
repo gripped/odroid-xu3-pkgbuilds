@@ -1,0 +1,18 @@
+post_install() {
+  message
+}
+
+post_upgrade() {
+  message
+}
+
+message() {
+  bold=`tput bold`
+  boff=`tput sgr0`
+  echo ""
+  echo "${bold}This version off the armsoc driver is an expermental attempt to fix the black screen when exiting fullscreen bug${boff}"
+  echo "${bold}It works quite well but there are occasional freezes where striped columns appear on the screen and a powercycle is needed.${boff}"
+  echo ""
+  echo "${bold}Another option is to use xf86-video-armsoc-xu3 which is more stable.${boff}"
+}
+ 

@@ -1,0 +1,11 @@
+--- src/armsoc_dri2.c	2015-09-26 11:53:53.616886508 +0100
++++ src/armsoc_dri2.c.new	2015-09-26 11:53:41.871877433 +0100
+@@ -890,7 +890,7 @@
+ 
+ 			return FALSE;
+ 		} else {
+-			if (ret == 0)
++//			if (ret == 0)
+ 				cmd->flags |= ARMSOC_SWAP_FAKE_FLIP;
+ 
+ 			if (pARMSOC->drmmode_interface->use_page_flip_events)

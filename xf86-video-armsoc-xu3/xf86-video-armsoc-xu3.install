@@ -1,0 +1,19 @@
+post_install() {
+  message
+}
+
+post_upgrade() {
+  message
+}
+
+message() {
+  bold=`tput bold`
+  boff=`tput sgr0`
+  echo ""
+  echo "${bold}This driver often results in a 'black screen with mouse cursor' bug when exiting fullscreen ${boff}"
+  echo "${bold}Switching Virtual Terminal and back usually resolves this but another option is to set NoFlip to True ${boff}"
+  echo "${bold}in the devices section of /etc/X11/xorg.conf. This results in lower performance though.   ${boff}"
+  echo ""
+  echo "${bold}Another option is to try xf86-video-armsoc-xu3-experimental${boff}"
+}
+ 

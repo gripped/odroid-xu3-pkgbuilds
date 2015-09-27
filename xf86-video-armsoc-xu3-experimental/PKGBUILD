@@ -8,26 +8,28 @@
 
 buildarch=4
 _commit=ddd97ea4911f475fcb6cdc7ab1c1398bcc829566
-pkgname=xf86-video-armsoc-xu3
+pkgname=xf86-video-armsoc-xu3-experimental
 _pkgname=xf86-video-armsoc
 pkgdesc="armsoc framebuffer driver for X which attempts to comprimise between speed and usability on the xu3/4"
 pkgver=238.ddd97ea
 pkgrel=1
 arch=('armv7h')
-install=xf86-video-armsoc-xu3.install
+install=xf86-video-armsoc-xu3-experimental.install
 url="git://anongit.freedesktop.org/xorg/driver/xf86-video-armsoc"
 license=('GPL2')
 makedepends=('git' 'pkgconfig' 'xorg-server-devel' 'resourceproto' 'scrnsaverproto')
 options=('!libtool')
 conflicts=('xf86-video-armsoc' 'xf86-video-armsoc-git' 'xf86-video-armsoc-odroid'
-           'xf86-video-armsoc-dsd' 'xf86-video-armsoc-xu3-experimental')
+           'xf86-video-armsoc-dsd' 'xf86-video-armsoc-xu3')
 replaces=('xf86-video-armsoc-dsd')
 source=("git+http://anongit.freedesktop.org/git/xorg/driver/xf86-video-armsoc.git#commit=${_commit}"
 	'xorg117.patch'
-        'write_combine_caching.patch')
+        'write_combine_caching.patch'
+        'meveric.patch')
 md5sums=('SKIP'
          'bf464fd87aab2e356b8e75ead4b5298c'
-         'c6b22faad840f391120a92ef38679a58')
+         'c6b22faad840f391120a92ef38679a58'
+         '087ddc0296c35dea4cfa761ca323cf27')
 pkgver() {
   cd "$srcdir/$_pkgname"
   echo $(git rev-list --count makepkg).$(git rev-parse --short makepkg)
@@ -37,6 +39,7 @@ prepare() {
   cd "$srcdir/$_pkgname"
   patch -N -p0 < ../xorg117.patch
   patch -N -p0 < ../write_combine_caching.patch
+  patch -N -p0 < ../meveric.patch
 }
 	
 build() {

@@ -1,0 +1,13 @@
+--- src/drmmode_display.c	2015-09-26 22:42:59.000000000 +0100
++++ src/drmmode_display.c.new	2015-09-26 23:06:07.093722600 +0100
+@@ -32,6 +32,10 @@
+ #include "config.h"
+ #endif
+ 
++#include <sys/types.h>
++#include <sys/stat.h>
++#include <unistd.h>
++
+ #include "xf86DDC.h"
+ #include "xf86RandR12.h"
+ 
