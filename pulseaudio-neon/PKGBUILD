@@ -13,7 +13,7 @@ _pkgbase=pulseaudio
 pkgname=(pulseaudio-neon libpulse-neon pulseaudio-{gconf,zeroconf,lirc,jack,bluetooth,equalizer})
 pkgdesc="A featureful, general-purpose sound server"
 pkgver=7.0
-pkgrel=1.1
+pkgrel=2
 arch=(i686 x86_64)
 url="http://www.freedesktop.org/wiki/Software/PulseAudio"
 license=(LGPL)
@@ -45,7 +45,8 @@ build() {
     --disable-samplerate \
     --disable-rpath \
     --disable-default-build-tests \
-    --enable-neon-opt
+    --enable-neon-opt \
+    DATADIRNAME=share
 
   # fight unused direct deps
   sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
@@ -65,7 +66,10 @@ package_pulseaudio-neon() {
   cd $_pkgbase-$pkgver
 
   _pulsever=$(./git-version-gen .tarball-version)
-  [[ $_pulsever = *.*.* ]] && _pulsever=${_pulsever%.*}
+  while [[ $_pulsever = *.*.* ]]; do
+    _pulsever=${_pulsever%.*}
+  done
+  _pulsever=${_pulsever%%-*}
 
   make -j1 DESTDIR="$pkgdir" install \
     bashcompletiondir=/usr/share/bash-completion/completions
