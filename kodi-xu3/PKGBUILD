@@ -6,7 +6,7 @@
 # Contributor: [vEX] <niechift.dot.vex.at.gmail.dot.com>
 # Contributor: Zeqadious <zeqadious.at.gmail.dot.com>
 # Contributor: BlackIkeEagle < ike DOT devolder AT gmail DOT com >
-# Contributor: Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+# Contributor: Bart??omiej Piotrowski <bpiotrowski@archlinux.org>
 # Contributor: Maxime Gauduin <alucryd@gmail.com>
 # Modifier: gripped <forum.odroid.com>
 
@@ -14,10 +14,10 @@ _prefix=/usr
 
 pkgbase=kodi-xu3
 pkgname=('kodi-xu3' 'kodi-eventclients-xu3')
-pkgver=15.2rc2
+pkgver=15.2rc3
 _codename=Isengard
-_commit=b00d3a6f7baed1b6c2a5569dd3c2cddc5f25effc
-pkgrel=1
+_commit=9e467f46220e80171149286636e46fa04d832ac2
+pkgrel=2
 arch=('i686' 'x86_64')
 url="http://kodi.tv"
 license=('GPL2')
@@ -31,12 +31,12 @@ makedepends=(
   'shairplay' 'smbclient' 'swig' 'taglib' 'tinyxml' 'unzip' 'upower' 'yajl' 'zip'
 )
 source=(
-  "$pkgname-$pkgver-$_codename.tar.gz::https://github.com/Owersun/xbmc/archive/$_commit.tar.gz"
+  "$pkgname-$pkgver-$_codename.tar.gz::https://github.com/gripped2/xbmc/archive/$_commit.tar.gz"
   'march.diff'
   '51-cec.rules'
   'mali.patch'
 )
-sha256sums=('d9aaa35cf9561d62677083f281b2e482c787e2e9052403d03ba4ce358ae12b1a'
+sha256sums=('0faf8d49f4e25934a664258aacdbeaa7108e39c6a80667a4aa5f7105c0578d17'
             '3f5eb4e0fc8142c865e93ad88468b16e9c750f9994795ac06f1b9e9e3f570d0c'
             '42d5adfb911e889134f8b81b509fc15a145e4b3e78be9505a46c47a36100e96f'
             '16c28ed97c0b2710a07a4bf7e4d5d23a1efcfd9fddc2334ce53a0f0003e1f31c')
