@@ -1,6 +1,6 @@
 # $Id$
 # Maintainer:  Ionut Biru <ibiru@archlinux.org>
-# Maintainer:  Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+# Maintainer:  Bart??omiej Piotrowski <bpiotrowski@archlinux.org>
 # Contributor: damir <damir@archlinux.org>
 # Contributor: Paul Mattal <paul@archlinux.org>
 
@@ -11,7 +11,7 @@
 
 pkgname=('x264-neon' 'libx264-neon' 'libx264-10bit-neon')
 _pkgname=x264
-pkgver=148.20150717
+pkgver=148.20150725
 pkgrel=1
 epoch=1
 arch=('i686' 'x86_64')
@@ -19,7 +19,8 @@ url='http://www.videolan.org/developers/x264.html'
 license=('GPL')
 depends=('glibc')
 makedepends=('yasm' 'git' 'ffmpeg' 'l-smash')
-source=(x264::git://git.videolan.org/x264/x264-sandbox.git#commit=e6d2a36bb)
+_commit=73ae2d11d472d0eb3b7c218dc1659db32f649b14
+source=(git://git.videolan.org/x264.git#commit=${_commit})
 md5sums=('SKIP')
 
 pkgver() {
