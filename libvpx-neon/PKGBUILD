@@ -20,7 +20,8 @@ url='http://www.webmproject.org/'
 license=('BSD')
 depends=('glibc' 'gcc-libs')
 makedepends=('yasm' 'git')
-provides=('libvpx.so')
+conflicts=('libvpx')
+provides=("$_pkgname=${pkgver}" 'libvpx.so')
 source=($_pkgname-$pkgver.tar.gz::https://github.com/webmproject/libvpx/archive/v$pkgver.tar.gz
         fix-armhf-link.patch
         mcpu.patch)
