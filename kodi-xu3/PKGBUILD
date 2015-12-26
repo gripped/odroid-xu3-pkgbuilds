@@ -17,7 +17,7 @@ pkgname=('kodi-xu3' 'kodi-eventclients-xu3')
 pkgver=15.2
 _codename=Isengard
 _commit=3a59f4b03708451273668022f415123522f634fd
-pkgrel=1
+pkgrel=2
 arch=('i686' 'x86_64')
 url="http://kodi.tv"
 license=('GPL2')
@@ -75,7 +75,8 @@ build() {
     --disable-openmax \
     --disable-vaapi \
     --disable-vdpau \
-    --enable-codec=mfc
+    --enable-codec=mfc \
+    CXXFLAGS="${CXXFLAGS} -D_GLIBCXX_USE_CXX11_ABI=1"
 
   # Now (finally) build
   make
